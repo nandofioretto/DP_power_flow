@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/ch/epfl/lia/frodo/algorithms/XCSPschema.xsd">
+	<presentation name="Athanasiadis13" maxConstraintArity="4" maximize="false" format="XCSP 2.1_FRODO" />
+	<agents nbAgents="8">
+		<agent name="agent_g1" />
+		<agent name="agent_g2" />
+		<agent name="agent_g3" />
+		<agent name="agent_g4" />
+		<agent name="agent_g5" />
+		<agent name="agent_g6" />
+		<agent name="agent_g7" />
+		<agent name="agent_g0" />
+	</agents>
+	<domains nbDomains="5">
+		<domain name="dom_g1" nbValues="5">-2..2</domain>
+		<domain name="dom_g2_and_g3" nbValues="7">-3..3</domain>
+		<domain name="dom_f12" nbValues="9">-4..4</domain>
+		<domain name="dom_f13" nbValues="7">-3..3</domain>
+		<domain name="dom_l" nbValues="3">-2..0</domain>
+	</domains>
+	<variables nbVariables="8">
+		<variable name="g1" domain="dom_g1" agent="agent_g1" />
+		<variable name="g2" domain="dom_g2_and_g3" agent="agent_g2" />
+		<variable name="g3" domain="dom_g2_and_g3" agent="agent_g3" />
+		<variable name="f12" domain="dom_f12" agent="agent_g4" />
+		<variable name="f13" domain="dom_f13" agent="agent_g5" />
+		<variable name="l1" domain="dom_l" agent="agent_g6" />
+		<variable name="l2" domain="dom_l" agent="agent_g7" />
+		<variable name="l3" domain="dom_l" agent="agent_g0" />
+	</variables>
+	<constraints nbConstraints="6">
+		<constraint name="conserv_g1" arity="4" scope="g1 l1 f12 f13" reference="global:weightedSum">
+			<parameters>[ { 1 g1 } { 1 l1 } { 1 f12 } { -1 f13 } ] <eq> 0 </eq></parameters>
+		</constraint>
+		<constraint name="conserv_g2" arity="3" scope="g2 l2 f12" reference="global:weightedSum">
+			<parameters>[ { 1 g2 } { 1 l2 } { -1 f12 } ] <eq> 0 </eq></parameters>
+		</constraint>
+		<constraint name="conserv_g3" arity="3" scope="g3 l3 f13" reference="global:weightedSum">
+			<parameters>[ { 1 g3 } { 1 l3 } { 1 f13 } ] <eq> 0 </eq></parameters>
+		</constraint>
+		<constraint name="cost_g1" arity="1" scope="g1" reference="global:XmultC">
+			<parameters>5</parameters>
+		</constraint>
+		<constraint name="cost_g2" arity="1" scope="g2" reference="global:XmultC">
+			<parameters>10</parameters>
+		</constraint>
+		<constraint name="cost_g3" arity="1" scope="g3" reference="global:XmultC">
+			<parameters>8</parameters>
+		</constraint>
+	</constraints>
+</instance>
+
