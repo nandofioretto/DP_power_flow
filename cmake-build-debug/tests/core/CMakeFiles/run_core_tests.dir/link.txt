@@ -1,1 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/c++   -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/run_core_tests.dir/WSumConstraintTest.cpp.o  -o ../../../bin/run_core_tests ../../../lib/libgtest.a ../../../lib/libgtest_main.a ../../../lib/libcpuBE_core.a ../../../lib/libgtest.a 

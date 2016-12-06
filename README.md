@@ -10,10 +10,12 @@ Compiling:
 ------------
 CpuBE has been tested on MAC-OS-X and Linux operating systems. To compile:
 
-      cmake .
+      mkdir build
+      cd build
+      cmake ..
       make
 
-The executable will be placed in the build/ folder
+The executable will be placed in the bin/ folder
 
 Executing:
 ------------
@@ -34,6 +36,9 @@ To execute CpuBE you need to specify a file format (currently [xcsp](http://arxi
 			  5 = descending order based on the variables' name (lexicographic order)
 	[--max[MB|GB=X]: X is the maximum amount of memory used by the GPU
 
-Example:
+Examplex:
 
-	cpuBE --format=wcsp ../test/rep_0_x_10.wcsp --agt=cpuBE 
+    cpuBE --format=wcsp ../test/rep_0_x_10.wcsp --agt=cpuBE
+    
+	cpuBE --format=xml ../test/rep_0_x_10.xml --agt=cpuBE
+	
