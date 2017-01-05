@@ -2,3 +2,4 @@ build/
 bin/
 todo.md
 .idea/
+cmake-build-debug/*

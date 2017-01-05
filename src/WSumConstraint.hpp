@@ -82,10 +82,10 @@ public:
     }
 
 protected:
-    inline util_t wsum(const std::vector<value_t> &values) const {
+    inline weight_t wsum(const std::vector<value_t> &values) const {
         if (values.size() != weights.size() )
             throw std::logic_error("values and weights vector sizes differ");
-        util_t wsum = 0;
+        weight_t wsum = 0;
         for (int i=0; i<weights.size(); i++) {
             wsum += values[i] * weights[i];
         }

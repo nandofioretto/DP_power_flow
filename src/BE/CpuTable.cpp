@@ -18,10 +18,11 @@ CpuTable::CpuTable(std::vector<Variable::ptr> vars)
   //  : CpuTable(varsToAgts(vars))
 { }
 
-CpuTable::~CpuTable() {
-  //Cpu::Info::decrGlobalMemory(getSizeBytes());
-  //   std::cout << "Destroying CPUTable: " << 
-  //     scope.back()->getAgtID() << "\n";
+CpuTable::~CpuTable()
+{
+    //Cpu::Info::decrGlobalMemory(getSizeBytes());
+    //   std::cout << "Destroying CPUTable: " <<
+    //     scope.back()->getAgtID() << "\n";
 }
 
 // Create the CPU Table Associated to the Constraint con
@@ -90,6 +91,8 @@ CpuTable::CpuTable(std::vector<Agent::ptr> agts)
         prIdxStore.push_back(pair);
     }
     std::sort(prIdxStore.begin(), prIdxStore.end(), std::less<std::pair<int, int>>());
+
+    std::cout << strutils::to_string(prIdxStore) << "\n";
 
     // New Ordered Constraint Scope (descending order)
     CpuTable::scope.resize(agts.size());

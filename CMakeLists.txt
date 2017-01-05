@@ -6,7 +6,7 @@ set(CpuBE_MINOR_VERSION 1)
 set(CpuBE_PATCH_VERSION 0)
 set(VERSION  ${CpuBE_MAJOR_VERSION}.${CpuBE_MINOR_VERSION}.${CpuBE_PATCH_VERSION})
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 
 # add the binary tree to the search path for include files
 # so that we will find PowerToolsConfig.h.

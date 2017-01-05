@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/ch/epfl/lia/frodo/algorithms/XCSPschema.xsd">
+<presentation name="random-network" maxConstraintArity="2" maximize="false" format="XCSP 2.1_FRODO"/>
+<agents nbAgents="3">
+	<agent name="a_0"/>
+	<agent name="a_1"/>
+	<agent name="a_2"/>
+</agents>
+<domains nbDomains="1">
+	<domain name="d" nbValues="3">-1..1</domain>
+</domains>
+<variables nbVariables="3">
+	<variable name="v_0" domain="d" agent="a_0"/>
+	<variable name="v_1" domain="d" agent="a_1"/>
+	<variable name="v_2" domain="d" agent="a_2"/>
+</variables>
+<relations nbRelations="1">
+	<relation name="r_1" arity="2" nbTuples="9" semantics="soft" defaultCost="0">1:-1 -1 |2:-1 0 |3:-1 1 |4:0 -1 |5:0 0 |6:0 1 |7:1 -1 |8:1 0 |9:1 1 </relation>
+</relations>
+<constraints nbConstraints="3">
+	<constraint name="c_0" arity="2" scope="v_0 v_1" reference="r_1"/>
+	<constraint name="c_1" arity="2" scope="v_0 v_2" reference="r_1"/>
+	<constraint name="c_2" arity="2" scope="v_1 v_2" reference="r_1"/>
+</constraints>
+</instance>

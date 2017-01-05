@@ -43,6 +43,8 @@ class CpuBEAgent : public Agent {
 private:
   // Constraints, transformed to a table
   std::shared_ptr<CpuTable> joinedTable;
+
+    std::shared_ptr<CpuTable> saved_joinedTable;
   
 };
 

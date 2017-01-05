@@ -160,13 +160,13 @@ namespace misc_utils
             std::string res = "{";
             for (int i = 0; i < array.size(); ++i)
             {
-                res += std::to_string(((int) (array[i] * 100 + .5) / 100.0));
+                res += std::to_string(array[i]);
+                //res += std::to_string( ((int) (array[i] * 100 + .5) / 100.0));
                 if (i < array.size() - 1) res += ", ";
             }
             res += "}";
             return res;
         }
-
         template<typename T>
         std::string to_string(const std::vector<std::vector<T> > pMatrix)
         {

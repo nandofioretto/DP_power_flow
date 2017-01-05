@@ -1,10 +1,12 @@
 ## Todo List:
 
-- values < 0 in domain (fix indexes them error from tables)
- 
- ##  Notes and Memo
--  Assume that the order of varialbes in the scope of the constraint 
- are listed in the same order as that of the parameters
 
- - <eq> 0 </eq> value tag added to be XML consistent  
- 
+0. There is an errro in the table aggregation!
+   - fix it 
+   - have flexibility on problem deinifition. (perhaps create a single file for each test).
+   
+2. Integration constraints (do not need to transform them to tables,
+cpuTable will handle that)
+3. Test Table aggregation
+4. Test Table Projection
+5. Test value retrieval after projection phase

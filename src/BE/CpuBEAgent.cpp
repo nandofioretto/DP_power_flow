@@ -48,23 +48,34 @@ void CpuBEAgent::initialize()
   {
     CpuAggregator::join(joinedTable, table);
   }
+
+  std::cout << joinedTable->to_string() << "\n";
 }
 
 
-void CpuBEAgent::utilPhaseAggr() {
-  for (auto& agt : Agent::getChildren()) {
+void CpuBEAgent::utilPhaseAggr()
+{
+  for (auto &agt : Agent::getChildren())
+  {
     auto BEagt = std::dynamic_pointer_cast<CpuBEAgent>(agt);
     auto chTable = BEagt->getTable();
     CpuAggregator::join(joinedTable, chTable);
   }
+  std::cout << "agent" << getName() << " - " << joinedTable->to_string() << "\n";
+
 }
 
 
-void CpuBEAgent::utilPhaseProj() {
-  if (!Agent::isRoot()) {
+void CpuBEAgent::utilPhaseProj()
+{
+  if (!Agent::isRoot())
+  {
+    saved_joinedTable = joinedTable;
     // This assignment causes the previous table to be freed.
     joinedTable = CpuProjector::project(joinedTable, Agent::getVariable());
   }
+  std::cout << "Proj: agent" << getName() << " - " << joinedTable->to_string() << "\n";
+
 }
 
 
@@ -72,38 +83,67 @@ void CpuBEAgent::utilPhaseProj() {
 // [Todo-Fix] This is wrong: 
 // Other than computing this cost you also need to add it to the row of the 
 // table wich match with the current separator variables.
-void CpuBEAgent::valuePhase() {
-  if (Agent::isRoot()) {
+void CpuBEAgent::valuePhase()
+{
+  if (Agent::isRoot())
+  {
     auto pair = CpuProjector::project(joinedTable);
     Agent::setUtil(pair.second);
     Agent::getVariable()->setValue(pair.first);
   }
-  else {
+  else
+  {
+    auto &scope = saved_joinedTable->getScope();
+    std::vector<value_t> vals(scope.size());
+    for (int i = 0; i < scope.size() - 1; i++)
+    {
+      vals[i] = scope[i]->getValue();
+    }
+
+    int bestVal = 0;
+    util_t bestUtil = Constants::worstvalue;
+    auto &var = Agent::getVariable();
+    for (int d = var->getMin(); d <= var->getMax(); d++)
+    {
+      vals[scope.size()-1] = d;
+      util_t util = saved_joinedTable->getUtil(vals);
+      if (util OP bestUtil)
+      {
+        bestUtil = util;
+        bestVal = d;
+      }
+    }
+  #ifdef FALSE
     auto ancestors = utils::concat(Agent::getParent(), Agent::getPseudoParents());
-    std::sort(ancestors.begin(), ancestors.end(), Agent::orderLt);    
-    
+    std::sort(ancestors.begin(), ancestors.end(), Agent::orderLt);
+
     // For every value of the domain of the variable of this ageint, 
     // Explore all constraints subjected to this values, and pick
     // the value domain which maximizes such cost.
     int bestVal = 0;
     util_t bestUtil = Constants::worstvalue;
-    auto& var = Agent::getVariable();
-    for (int d=var->getMin(); d<var->getMax(); d++) {
+    auto &var = Agent::getVariable();
+    for (int d = var->getMin(); d <= var->getMax(); d++)
+    {
       util_t sumUtil = 0;
-      for (auto& con : getAncestorsConstraints()) {
-	std::vector<value_t> tuple(con->getArity(), -1);
-	int i = 0;
-	for (auto& v : con->getScope()) {
-	  tuple[i++] = v->getAgtID() == Agent::getID() ? d : v->getValue();
-	}
-	sumUtil += con->getUtil(tuple);
+      for (auto &con : getAncestorsConstraints())
+      {
+        std::vector<value_t> tuple(con->getArity(), -1);
+        int i = 0;
+        for (auto &v : con->getScope())
+        {
+          tuple[i++] = v->getAgtID() == Agent::getID() ? d : v->getValue();
+        }
+        sumUtil += con->getUtil(tuple);
       }//- for all c in ancestor's constraints
-      if (sumUtil OP bestUtil) {
-	bestUtil = sumUtil;
-	bestVal = d;
+      if (sumUtil OP bestUtil)
+      {
+        bestUtil = sumUtil;
+        bestVal = d;
       }
     }//- for all d in D
-    
+  #endif
+
     //Agent::setUtil(bestUtil);
     Agent::getVariable()->setValue(bestVal);
   }

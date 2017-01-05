@@ -37,7 +37,6 @@ std::vector<int> Problem::mapVariables;
 std::vector<int> Problem::mapConstraints;
 
 
-
 void Problem::importXML(std::string fileName, InputParams::agent_t agtType)
 {
     int size = 0;
@@ -80,7 +79,7 @@ void Problem::importXML(std::string fileName, InputParams::agent_t agtType)
     in.close();
 }
 
-void Problem::parseXMLAgents(xml_node<>* root, InputParams::agent_t agtType)
+void Problem::parseXMLAgents(xml_node<> *root, InputParams::agent_t agtType)
 {
     xml_node<> *xagents = root->first_node("agents");
     int nb_agents = atoi(xagents->first_attribute("nbAgents")->value());
@@ -103,7 +102,7 @@ void Problem::parseXMLAgents(xml_node<>* root, InputParams::agent_t agtType)
             << agents.size() << " differs from the number of agents declared.");
 }
 
-void Problem::parseXMLVariables(xml_node<>* root)
+void Problem::parseXMLVariables(xml_node<> *root)
 {
     xml_node<> *xdoms = root->first_node("domains");
     xml_node<> *xvars = root->first_node("variables");
@@ -124,7 +123,7 @@ void Problem::parseXMLVariables(xml_node<>* root)
             << variables.size() << " differs from the number of variables declared.");
 }
 
-void Problem::parseXMLConstraints(xml_node<>* root)
+void Problem::parseXMLConstraints(xml_node<> *root)
 {
     // Parse and create constraints
     xml_node<> *xrels = root->first_node("relations");
@@ -227,8 +226,6 @@ void Problem::importUAI(std::string fileName, InputParams::agent_t agt)
 }
 
 
-
-
 ////////////////////////////////////////////
 // PSEUDO-TREE ORDERING
 ///////////////////////////////////////////
@@ -269,360 +266,410 @@ bool Problem::order_neig_des(int LHS, int RHS)
 }
 
 
-void Problem::makePseudoTreeOrder() {
-  if (!Preferences::silent) {
-    std::cout << "Construct (good) PseudoTree..."; std::flush(std::cout);
-    //std::cout << "Searching for a good pseudo-tree" << std::endl;
-  }
+void Problem::makePseudoTreeOrder()
+{
+    if (!Preferences::silent)
+    {
+        std::cout << "Construct (good) PseudoTree...";
+        std::flush(std::cout);
+        //std::cout << "Searching for a good pseudo-tree" << std::endl;
+    }
 
-  // Check if pseudoTree exists
-  if (existsSavedPseudoTree()) {
-    loadPseudoTree();
-    return;
-  }
+    // Check if pseudoTree exists
+    if (existsSavedPseudoTree())
+    {
+        loadPseudoTree();
+        return;
+    }
 
 
-  std::vector<std::vector<int>> forest = Problem::getForest();
+    std::vector<std::vector<int>> forest = Problem::getForest();
 
-  int level = 0;
-  // for (auto& tree : forest) {
-  //   std::cout << "Forest: :";
-  //   for (auto i:tree) std::cout << i << " ";
-  //   std::cout << "\n";
-  // }
+    int level = 0;
+    // for (auto& tree : forest) {
+    //   std::cout << "Forest: :";
+    //   for (auto i:tree) std::cout << i << " ";
+    //   std::cout << "\n";
+    // }
 
-  std::vector<int> vec_r;
-  std::vector<int> vec_h;
+    std::vector<int> vec_r;
+    std::vector<int> vec_h;
 
-  for (auto& tree : forest) {
-    int best_w = -1;
-    int best_h = -1;
-    int best_a = -1;
+    for (auto &tree : forest)
+    {
+        int best_w = -1;
+        int best_h = -1;
+        int best_a = -1;
 
-    for (auto agtId : tree) {
-      for (int h=0; h<=5; h++) {
-        makePseudoTreeOrder(tree, agtId, h, level);
-        int w = getInducedWidth(tree);
-        // std::cout << " w = " << w << std::endl;
+        for (auto agtId : tree)
+        {
+            for (int h = 0; h <= 5; h++)
+            {
+                makePseudoTreeOrder(tree, agtId, h, level);
+                int w = getInducedWidth(tree);
+                // std::cout << " w = " << w << std::endl;
 
-        if (best_w == -1 || w < best_w) {
-          best_w = w;
-          best_h = h;
-          best_a = agtId;
-        }
-      }//-heur
-    }//-tree
-    makePseudoTreeOrder(tree, best_a, best_h, level);
-    vec_r.push_back(best_a);
-    vec_h.push_back(best_h);
+                if (best_w == -1 || w < best_w)
+                {
+                    best_w = w;
+                    best_h = h;
+                    best_a = agtId;
+                }
+            }//-heur
+        }//-tree
+        makePseudoTreeOrder(tree, best_a, best_h, level);
+        vec_r.push_back(best_a);
+        vec_h.push_back(best_h);
 
-    level += tree.size();
-  }//-forest
+        level += tree.size();
+    }//-forest
 
-  // Save PseudoTree
-  savePseudoTree(vec_r, vec_h);
+    // Save PseudoTree
+    savePseudoTree(vec_r, vec_h);
 
-  if (!Preferences::silent) {
-    std::cout << "\tok\n";
-  }
+    if (!Preferences::silent)
+    {
+        std::cout << "\tok\n";
+    }
 }
 
 
-void Problem::makePseudoTreeOrder(int root, int heur) {
+void Problem::makePseudoTreeOrder(int root, int heur)
+{
 
-  std::vector<std::vector<int>> forest = Problem::getForest();
-  std::vector<int> vec_r;
-  std::vector<int> vec_h;
+    std::vector<std::vector<int>> forest = Problem::getForest();
+    std::vector<int> vec_r;
+    std::vector<int> vec_h;
 
 
-  int level = 0;
-  for (auto& tree : forest) {
-    int best_w = -1;
-    int best_h = heur;
+    int level = 0;
+    for (auto &tree : forest)
+    {
+        int best_w = -1;
+        int best_h = heur;
 
-    int r = tree[0];
-    if (utils::find(root, tree)) {
-      r = root;
-    }
-
-    if (best_h == -1) {
-      for (int h=0; h<=5; h++) {
-        makePseudoTreeOrder(tree, r, h, -1);
-        int w = getInducedWidth(tree);
-        if (best_w == -1 || w < best_w) {
-          best_w = w;
-          best_h = h;
+        int r = tree[0];
+        if (utils::find(root, tree))
+        {
+            r = root;
         }
-      }//-heur
-    }
-    makePseudoTreeOrder(tree, r, best_h, level);
-    vec_r.push_back(r);
-    vec_h.push_back(best_h);
 
-    level+= tree.size();
+        if (best_h == -1)
+        {
+            for (int h = 0; h <= 5; h++)
+            {
+                makePseudoTreeOrder(tree, r, h, -1);
+                int w = getInducedWidth(tree);
+                if (best_w == -1 || w < best_w)
+                {
+                    best_w = w;
+                    best_h = h;
+                }
+            }//-heur
+        }
+        makePseudoTreeOrder(tree, r, best_h, level);
+        vec_r.push_back(r);
+        vec_h.push_back(best_h);
 
-  }//-tree
+        level += tree.size();
 
-  savePseudoTree(vec_r, vec_h);
+    }//-tree
+
+    savePseudoTree(vec_r, vec_h);
 
 }
 
 
 // level = starting level of this group of agents = prev group size + 1
 void Problem::makePseudoTreeOrder
-(std::vector<int> agentsId, int root, int heur, int level) {
-  Preferences::ptRoot = root;
-  Preferences::ptHeuristic = heur;
+        (std::vector<int> agentsId, int root, int heur, int level)
+{
+    Preferences::ptRoot = root;
+    Preferences::ptHeuristic = heur;
 
-  std::map<int, bool> discovered;
-  for (auto agtId : agentsId) {
-    discovered[ agtId ] = false; // set discoverable
-    getAgent(agtId)->clearOrder();
-  }
+    std::map<int, bool> discovered;
+    for (auto agtId : agentsId)
+    {
+        discovered[agtId] = false; // set discoverable
+        getAgent(agtId)->clearOrder();
+    }
 
-  std::stack<int> S;
-  S.push( root );
-  getAgent(root)->setParent(nullptr);
+    std::stack<int> S;
+    S.push(root);
+    getAgent(root)->setParent(nullptr);
 
-  // DFS exploration
-  while (!S.empty()) {
-    int ai = S.top(); S.pop();
+    // DFS exploration
+    while (!S.empty())
+    {
+        int ai = S.top();
+        S.pop();
 
-    if (!discovered[ ai ]) {
-      // Get neighbors of ai and order them
-      std::vector<int> N;
-      for (auto a : getAgent(ai)->getNeighbors())
-        N.push_back(a->getID());
+        if (!discovered[ai])
+        {
+            // Get neighbors of ai and order them
+            std::vector<int> N;
+            for (auto a : getAgent(ai)->getNeighbors())
+                N.push_back(a->getID());
 
-      if (heur == 0)
-        std::sort(N.begin(), N.end(), order_asc); // default
-      else if (heur == 1)
-        std::sort(N.begin(), N.end(), order_des);  //
-      else if (heur == 2)
-        std::sort(N.begin(), N.end(), order_neig_asc);  // (frodo default?)
-      else if (heur == 3)
-        std::sort(N.begin(), N.end(), order_neig_des);  //
-      else if (heur == 4)
-        std::sort(N.begin(), N.end(), lex_asc);  //
-      else if (heur == 5)
-        std::sort(N.begin(), N.end(), lex_des);  //
+            if (heur == 0)
+                std::sort(N.begin(), N.end(), order_asc); // default
+            else if (heur == 1)
+                std::sort(N.begin(), N.end(), order_des);  //
+            else if (heur == 2)
+                std::sort(N.begin(), N.end(), order_neig_asc);  // (frodo default?)
+            else if (heur == 3)
+                std::sort(N.begin(), N.end(), order_neig_des);  //
+            else if (heur == 4)
+                std::sort(N.begin(), N.end(), lex_asc);  //
+            else if (heur == 5)
+                std::sort(N.begin(), N.end(), lex_des);  //
 
-      for (int ci : N ) {
-        if (!getAgent(ai)->isRoot() &&
-            ci == getAgent(ai)->getParent()->getID() )
-          continue;
+            for (int ci : N)
+            {
+                if (!getAgent(ai)->isRoot() &&
+                    ci == getAgent(ai)->getParent()->getID())
+                    continue;
 
-        S.push( ci );
+                S.push(ci);
 
-        // Children of ai
-        if (!discovered[ ci ]) {
-          getAgent(ai)->addChild( getAgent(ci) );  // ci is child of ai
-          getAgent(ci)->setParent( getAgent(ai) ); // ai is parent of ci
-        }
-        else {
-          // Set back-edges
-          getAgent(ai)->addPseudoParent( getAgent(ci) );
-          getAgent(ci)->addPseudoChild( getAgent(ai) );
-          getAgent(ci)->removeChild( getAgent(ai) );
-        }
-      }//-neighbors
+                // Children of ai
+                if (!discovered[ci])
+                {
+                    getAgent(ai)->addChild(getAgent(ci));  // ci is child of ai
+                    getAgent(ci)->setParent(getAgent(ai)); // ai is parent of ci
+                }
+                else
+                {
+                    // Set back-edges
+                    getAgent(ai)->addPseudoParent(getAgent(ci));
+                    getAgent(ci)->addPseudoChild(getAgent(ai));
+                    getAgent(ci)->removeChild(getAgent(ai));
+                }
+            }//-neighbors
 
-      discovered[ ai ] = true;
+            discovered[ai] = true;
 
-    }//-not discovered
-  }// while Stack is not empty
+        }//-not discovered
+    }// while Stack is not empty
 
-  // Check Graph is connected
-  for (auto& kv : discovered) {
-    ASSERT(kv.second, "Error: The constraint graph is not connected");
-  }
+    // Check Graph is connected
+    for (auto &kv : discovered)
+    {
+        ASSERT(kv.second, "Error: The constraint graph is not connected");
+    }
 
-  // Set separator set.
-  for (auto agtId : agentsId)
-    getAgent(agtId)->getSeparator(); // it also builds one
+    // Set separator set.
+    for (auto agtId : agentsId)
+        getAgent(agtId)->getSeparator(); // it also builds one
 
-  // Set Agents priorities - start from the root and recur:
-  if (level >= 0)
-    setAgentsPriorities(root, level);
+    // Set Agents priorities - start from the root and recur:
+    if (level >= 0)
+        setAgentsPriorities(root, level);
 }
 
 
 //
 // Generate Forest
 //
-std::vector<std::vector<int>> Problem::getForest() {
+std::vector<std::vector<int>> Problem::getForest()
+{
 
-  std::vector<std::vector<int>> forest;
-  std::map<int, bool> discovered;
+    std::vector<std::vector<int>> forest;
+    std::map<int, bool> discovered;
 
-  for (auto agt : Problem::getAgents()) {
-    discovered[ agt->getID() ] = false; // set discoverable
-  }
-
-  int root = Preferences::default_ptRoot;
-  while (utils::findFirstValue(discovered, false) != discovered.end()) {
-
-    // If this root has already been processsed, choose another root
-    if (discovered[root]) {
-      root = utils::findFirstValue(discovered, false)->first;
+    for (auto agt : Problem::getAgents())
+    {
+        discovered[agt->getID()] = false; // set discoverable
     }
 
-    std::vector<int> tree;
-    std::stack<int> S;
-    S.push( root );
-    // DFS exploration
-    while (!S.empty()) {
-      int ai = S.top(); S.pop();
+    int root = Preferences::default_ptRoot;
+    while (utils::findFirstValue(discovered, false) != discovered.end())
+    {
 
-      if (!discovered[ ai ]) {
-        for (auto& ci : getAgent(ai)->getNeighbors() ) {
-          S.push( ci->getID() );
+        // If this root has already been processsed, choose another root
+        if (discovered[root])
+        {
+            root = utils::findFirstValue(discovered, false)->first;
         }
-        discovered[ ai ] = true;
-        tree.push_back(ai);
-      }
-    }// end DFS
-    forest.push_back(tree);
-  }
 
-  return forest;
-}
+        std::vector<int> tree;
+        std::stack<int> S;
+        S.push(root);
+        // DFS exploration
+        while (!S.empty())
+        {
+            int ai = S.top();
+            S.pop();
 
-
-void Problem::setAgentsPriorities(int root, int root_p) {
-  std::queue<Agent::ptr> Q;
-  auto rootAgt = getAgent(root);
-  rootAgt->setPriority(root_p);
-  Q.push(rootAgt);
-
-  while (!Q.empty()) {
-    auto agt = Q.front(); Q.pop();
-    int p = agt->getPriority();
-    for (auto chAgt : agt->getChildren()) {
-      chAgt->setPriority(p+1);
-      Q.push(chAgt);
+            if (!discovered[ai])
+            {
+                for (auto &ci : getAgent(ai)->getNeighbors())
+                {
+                    S.push(ci->getID());
+                }
+                discovered[ai] = true;
+                tree.push_back(ai);
+            }
+        }// end DFS
+        forest.push_back(tree);
     }
-  } //-
-}
 
-int Problem::getInducedWidth(std::vector<int> tree) {
-  int w_star = -1;
-  for (int aId : tree) {
-    int w = getAgent(aId)->getSeparator().size();
-    if (w > w_star) w_star = w;
-  }
-  return w_star;
+    return forest;
 }
 
 
-int Problem::getInducedWidth() {
-  int w_star = -1;
-  for (auto a : Problem::agents) {
-    int w = a->getSeparator().size();
-    if (w > w_star) w_star = w;
-  }
-  return w_star;
+void Problem::setAgentsPriorities(int root, int root_p)
+{
+    std::queue<Agent::ptr> Q;
+    auto rootAgt = getAgent(root);
+    rootAgt->setPriority(root_p);
+    Q.push(rootAgt);
+
+    while (!Q.empty())
+    {
+        auto agt = Q.front();
+        Q.pop();
+        int p = agt->getPriority();
+        for (auto chAgt : agt->getChildren())
+        {
+            chAgt->setPriority(p + 1);
+            Q.push(chAgt);
+        }
+    } //-
 }
 
-
-
-bool Problem::existsSavedPseudoTree() {
-  std::string file = InputParams::getFileName();
-  file = file.substr(0, file.find_last_of("."));
-  file += ".ptf";// pseudo-tree format
-  std::ifstream f(file.c_str());
-  return f.good();
-}
-
-void Problem::loadPseudoTree() {
-  std::string file = InputParams::getFileName();
-  file = file.substr(0, file.find_last_of("."));
-  file += ".ptf";// pseudo-tree format
-  std::string sep = " ";
-  std::ifstream ifs;
-  ifs.open(file.c_str(), std::ifstream::in);
-
-  std::string line;
-  //TODO: Reinsert this line
-  // getline(ifs, line); // skip first line (root and heuristics)
-
-  while (getline(ifs, line)) {
-    std::stringstream data(line);
-    int agtId, priority, size;
-    // Agent and priority
-    data >> agtId >> priority >> size;
-    auto agt = Problem::getAgent(agtId);
-    agt->setPriority(priority);
-    // Parent
-    if (size == 1) {
-      data >> agtId;
-      agt->setParent(Problem::getAgent(agtId));
-    } else {
-      agt->setParent(nullptr);
+int Problem::getInducedWidth(std::vector<int> tree)
+{
+    int w_star = -1;
+    for (int aId : tree)
+    {
+        int w = getAgent(aId)->getSeparator().size();
+        if (w > w_star) w_star = w;
     }
-    // PseudoParents
-    data >> size;
-    for (int i=0; i<size; i++){
-      data >> agtId;
-      agt->addPseudoParent(Problem::getAgent(agtId));
-    }
-    // Children
-    data >> size;
-    for (int i=0; i<size; i++){
-      data >> agtId;
-      agt->addChild(Problem::getAgent(agtId));
-    }
-    // PseudoChildren
-    data >> size;
-    for (int i=0; i<size; i++){
-      data >> agtId;
-      agt->addPseudoChild(Problem::getAgent(agtId));
-    }
-  }
-
-  ifs.close();
-
-  // Set separator set.
-  for (auto agt : Problem::agents)
-    agt->getSeparator(); // it  builds one
+    return w_star;
 }
 
 
-void Problem::savePseudoTree(std::vector<int> vec_r, std::vector<int> vec_h) {
-  std::string file = InputParams::getFileName();
-  file = file.substr(0, file.find_last_of("."));
-  file += ".ptf";// pseudo-tree format
-  std::string sep = " ";
-  std::ofstream ofs;
-  ofs.open(file.c_str(), std::ofstream::out);
+int Problem::getInducedWidth()
+{
+    int w_star = -1;
+    for (auto a : Problem::agents)
+    {
+        int w = a->getSeparator().size();
+        if (w > w_star) w_star = w;
+    }
+    return w_star;
+}
 
-  // Root node and Heuristics
-  ofs << vec_r.size() << sep;  // size of the forst
-  for (int i=0; i<vec_r.size(); i++)
-    ofs << vec_r[i] << sep << vec_h[i] << sep;
-  ofs << std::endl;
 
-  for (auto agt: Problem::agents){
-    // Agent and Priority
-    ofs << agt->getID() << sep << agt->getPriority() << sep;
-    // Parent
-    if (agt->isRoot()) ofs << "0" << sep;
-    else               ofs << "1" << sep << agt->getParent()->getID() << sep;
-    // PseudoParents
-    ofs << agt->getPseudoParents().size() << sep;
-    for (auto ai: agt->getPseudoParents())
-      ofs << ai->getID() << sep;
+bool Problem::existsSavedPseudoTree()
+{
+    std::string file = InputParams::getFileName();
+    file = file.substr(0, file.find_last_of("."));
+    file += ".ptf";// pseudo-tree format
+    std::ifstream f(file.c_str());
+    return f.good();
+}
 
-    // Children
-    ofs << agt->getChildren().size() << sep;
-    for (auto ai: agt->getChildren())
-      ofs << ai->getID() << sep;
+void Problem::loadPseudoTree()
+{
+    std::string file = InputParams::getFileName();
+    file = file.substr(0, file.find_last_of("."));
+    file += ".ptf";// pseudo-tree format
+    std::string sep = " ";
+    std::ifstream ifs;
+    ifs.open(file.c_str(), std::ifstream::in);
 
-    // PseudoChildren
-    ofs << agt->getPseudoChildren().size() << sep;
-    for (auto ai: agt->getPseudoChildren())
-      ofs << ai->getID() << sep;
+    std::string line;
+    //TODO: Reinsert this line
+    // getline(ifs, line); // skip first line (root and heuristics)
+
+    while (getline(ifs, line))
+    {
+        std::stringstream data(line);
+        int agtId, priority, size;
+        // Agent and priority
+        data >> agtId >> priority >> size;
+        auto agt = Problem::getAgent(agtId);
+        agt->setPriority(priority);
+        // Parent
+        if (size == 1)
+        {
+            data >> agtId;
+            agt->setParent(Problem::getAgent(agtId));
+        }
+        else
+        {
+            agt->setParent(nullptr);
+        }
+        // PseudoParents
+        data >> size;
+        for (int i = 0; i < size; i++)
+        {
+            data >> agtId;
+            agt->addPseudoParent(Problem::getAgent(agtId));
+        }
+        // Children
+        data >> size;
+        for (int i = 0; i < size; i++)
+        {
+            data >> agtId;
+            agt->addChild(Problem::getAgent(agtId));
+        }
+        // PseudoChildren
+        data >> size;
+        for (int i = 0; i < size; i++)
+        {
+            data >> agtId;
+            agt->addPseudoChild(Problem::getAgent(agtId));
+        }
+    }
+
+    ifs.close();
+
+    // Set separator set.
+    for (auto agt : Problem::agents)
+        agt->getSeparator(); // it  builds one
+}
+
+
+void Problem::savePseudoTree(std::vector<int> vec_r, std::vector<int> vec_h)
+{
+    std::string file = InputParams::getFileName();
+    file = file.substr(0, file.find_last_of("."));
+    file += ".ptf";// pseudo-tree format
+    std::string sep = " ";
+    std::ofstream ofs;
+    ofs.open(file.c_str(), std::ofstream::out);
+
+    // Root node and Heuristics
+    ofs << vec_r.size() << sep;  // size of the forst
+    for (int i = 0; i < vec_r.size(); i++)
+        ofs << vec_r[i] << sep << vec_h[i] << sep;
     ofs << std::endl;
-  }
-  ofs.close();
+
+    for (auto agt: Problem::agents)
+    {
+        // Agent and Priority
+        ofs << agt->getID() << sep << agt->getPriority() << sep;
+        // Parent
+        if (agt->isRoot()) ofs << "0" << sep;
+        else ofs << "1" << sep << agt->getParent()->getID() << sep;
+        // PseudoParents
+        ofs << agt->getPseudoParents().size() << sep;
+        for (auto ai: agt->getPseudoParents())
+            ofs << ai->getID() << sep;
+
+        // Children
+        ofs << agt->getChildren().size() << sep;
+        for (auto ai: agt->getChildren())
+            ofs << ai->getID() << sep;
+
+        // PseudoChildren
+        ofs << agt->getPseudoChildren().size() << sep;
+        for (auto ai: agt->getPseudoChildren())
+            ofs << ai->getID() << sep;
+        ofs << std::endl;
+    }
+    ofs.close();
 }

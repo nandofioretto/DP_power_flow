@@ -29,6 +29,10 @@ public:
         if ( !Constants::isSat(_const) ) {
             throw std::logic_error("XMultCConstraint: constant (" + std::to_string(_const) + ") must be a finite number");
         }
+        if (sizeof(_const) != sizeof(util_t))
+            throw std::logic_error("XMultCConstraint: constant (" + std::to_string(_const)
+                                   + ") weight type must equal constraint utility/cost type");
+
         Constraint::scope = _scope;
         for(auto& v : Constraint::scope) {
             scopeAgtID.push_back(v->getAgtID());

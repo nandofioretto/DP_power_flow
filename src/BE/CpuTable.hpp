@@ -23,13 +23,14 @@ public:
 
     CpuTable(std::vector<Variable::ptr> _vars);
 
-    ~CpuTable();
-
     // Create the CPU Table Associated to the Constraint con
     CpuTable(Constraint::ptr con);
 
     // Creates an Empty CPU Table Associaed to the set of variables given
     CpuTable(std::vector<Agent::ptr> agts);
+
+    ~CpuTable();
+
 
     void pushRow(std::vector<value_t> v, util_t u)
     {
@@ -42,7 +43,7 @@ public:
         return values.size();
     }
 
-    std::vector<Variable::ptr> getScope() const
+    const std::vector<Variable::ptr>& getScope() const
     {
         return scope;
     }
@@ -80,6 +81,20 @@ public:
         return values.size() * scope.size() * sizeof(value_t);
     }
 
+    util_t getUtil(std::vector<value_t>& scope_values)
+    {
+        size_t idx = 0;
+        size_t mult = 1;
+        value_t min = 0;
+        for (int i = scope.size() - 1; i >= 0; i--)
+        {
+            min = scope[i]->getMin();
+            idx += (scope_values[i] - min) * mult;
+            mult *= scope[i]->getDomSize();
+        }
+        return getUtil(idx);
+    }
+
     std::string to_string() const
     {
         std::string res;
@@ -89,7 +104,8 @@ public:
         //for (int i=0; i<std::min((size_t)10, getSize()); i++) {
         for (int i = 0; i < getSize(); i++)
         {
-            res += std::to_string(i) + ": " +
+            if (Constants::isFinite(utils[i]))
+                res += std::to_string(i) + ": " +
                    strutils::to_string(values[i]) + " = " +
                    std::to_string(utils[i]) + "\n";
         }
