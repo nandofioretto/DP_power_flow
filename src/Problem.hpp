@@ -14,9 +14,11 @@
 
 #include "Agent.hpp"
 #include "Constraint.hpp"
+#include "Constant.hpp"
 #include "InputParams.hpp"
 #include "Preferences.hpp"
 #include "Utils/CpuInfo.hpp"
+
 
 class Problem
 {
@@ -208,6 +210,8 @@ private:
 
     static void parseXMLConstraints(rapidxml::xml_node<> *root);
 
+    static void parseXMLConstants(rapidxml::xml_node<> *root);
+
     static bool order_des(int LHS, int RHS);
 
     static bool order_asc(int LHS, int RHS);
@@ -225,6 +229,7 @@ private:
     static std::vector<std::shared_ptr<Agent>> agents;
     static std::vector<std::shared_ptr<Variable>> variables;
     static std::vector<std::shared_ptr<Constraint>> constraints;
+    static std::vector<std::shared_ptr<Constant>> constants;
     static std::vector<int> mapAgents; // only one active
     static std::vector<int> mapVariables;
     static std::vector<int> mapConstraints;

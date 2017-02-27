@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/ch/epfl/lia/frodo/algorithms/XCSPschema.xsd">
+	<presentation name="test" maxConstraintArity="4" maximize="false" format="XCSP2.1" />
+	<agents nbAgents=“3”>
+		<agent name="bus1" />
+		<agent name="bus2" />
+		<agent name="bus3" />
+	</agents>
+	<domains nbDomains="3">
+		<domain name="dom_v_magn">-2..2 [0.1]</domain>
+		<domain name="dom_v_angle">-0.52..0.52 [0.01]</domain>
+		<domain name="dom_P">-3..3 [0.1]</domain>
+	</domains>
+	<variables nbVariables="w8">
+		<variable name="v1_m" domain="dom_v_magn"  agent="bus1" />
+		<variable name="v1_a" domain="dom_v_angle" agent="bus1" />
+		<variable name="g1"   domain="dom_g" 	   agent="bus1" />
+		<variable name="v2_m" domain="dom_v_magn"  agent="bus2" />
+		<variable name="v2_a" domain="dom_v_angle" agent="bus2" />
+		<variable name="g2"   domain="dom_g"       agent="bus2" />
+		<variable name="v3_m" domain="dom_v_magn"  agent="bus3" />
+		<variable name="v3_a" domain="dom_v_angle" agent="bus3" />
+		<variable name="g3"   domain="dom_g"       agent="bus3" />
+	</variables>
+	<constants>
+		<constant name="c">4.0<constant/>
+		<constant name="vec" type="vector" nbRows="3">4.0 2.1 3.4<constant/>
+		<constant name="Y" type="matrix" nbRows="3" nbColumns="3">
+			4.0 2.1 3.4
+			4.0 2.1 3.4
+			4.0 2.1 3.4
+		</constant>		
+		<constant name="Theta" type="matrix" nbRows="3" nbColumns="3">
+			4.0 2.1 3.4
+			4.0 2.1 3.4
+			4.0 2.1 3.4
+		</constant>
+	</constants>
+	<constraints nbConstraints="1">
+		<constraint name="power_1" arity="6" scope="v1_m v2_m v3_m v1_a v2_a v3_a" constants="Y Theta" sum_index="i" range="1 2 3" reference="global:active_power_balance">
+			<parameters> 
+				v1_m *  SUM_i Y[1][{i}] * v{i}_m *  cos( v1_a - v{i}_a - Theta[1][{i}] )
+			</parameters>
+		</constraint>
+	</constraints>
+</instance>

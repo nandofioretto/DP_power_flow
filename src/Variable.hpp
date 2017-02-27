@@ -36,7 +36,7 @@ public:
     Variable(std::vector<value_t> values, std::shared_ptr<Agent> &agt,
              value_t prior = Constants::NaN);
 
-    Variable(value_t min, value_t max, std::shared_ptr<Agent> &agt,
+    Variable(value_t min, value_t max, value_t discr, std::shared_ptr<Agent> &agt,
              value_t prior = Constants::NaN);
 
     value_t &operator[](std::size_t idx)

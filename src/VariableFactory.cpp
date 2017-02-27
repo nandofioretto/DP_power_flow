@@ -45,10 +45,16 @@ Variable::ptr VariableFactory::create(xml_node<>* varXML,
   std::string content = domXML->value();
   size_t ival = content.find("..");
   ASSERT (ival != std::string::npos, "Cannot handle not contiguous domains");
-  int min = atoi( content.substr(0, ival).c_str() ); 
-  int max = atoi( content.substr(ival+2).c_str() ); 
+  size_t idis = content.find("[");
 
-  return create(name, owner, min, max);
+  value_t min = std::stod(content.substr(0, ival));
+  value_t max = std::stod(content.substr(ival+2, idis - ival + 2));
+
+  value_t discr = (idis != std::string::npos)
+                  ? std::stod(content.substr(idis+1))
+                  : 1;
+
+  return create(name, owner, min, max, discr);
 }
 
 
@@ -69,11 +75,11 @@ Variable::ptr VariableFactory::create(std::string name, Agent::ptr owner,
 
 
 Variable::ptr VariableFactory::create(std::string name, Agent::ptr owner, 
-				      value_t min, value_t max)
+				      value_t min, value_t max, value_t discr)
 {
   ASSERT(owner, "No agent associated to variable " << name << " given.");
     
-  Variable::ptr var = std::make_shared<Variable>(min, max, owner);
+  Variable::ptr var = std::make_shared<Variable>(min, max, discr, owner);
   var->setName( name );
   // Register variable in the agent owning it
   owner->addVariable( var );

@@ -20,6 +20,7 @@
 #include "AgentFactory.hpp"
 #include "VariableFactory.hpp"
 #include "ConstraintFactory.hpp"
+#include "ConstantFactory.hpp"
 
 #include "utils.hpp"
 #include "string_utils.hpp"
@@ -28,14 +29,13 @@ using namespace misc_utils;
 using namespace rapidxml;
 using namespace std;
 
-
 std::vector<std::shared_ptr<Agent>> Problem::agents;;
 std::vector<std::shared_ptr<Variable>> Problem::variables;
 std::vector<std::shared_ptr<Constraint>> Problem::constraints;
+std::vector<std::shared_ptr<Constant>> Problem::constants;
 std::vector<int> Problem::mapAgents; // only one active
 std::vector<int> Problem::mapVariables;
 std::vector<int> Problem::mapConstraints;
-
 
 void Problem::importXML(std::string fileName, InputParams::agent_t agtType)
 {
@@ -68,6 +68,8 @@ void Problem::importXML(std::string fileName, InputParams::agent_t agtType)
 
     parseXMLAgents(root, agtType);
     parseXMLVariables(root);
+    parseXMLConstants(root);
+
     parseXMLConstraints(root);
 
     for (auto &a : agents)
@@ -121,6 +123,22 @@ void Problem::parseXMLVariables(xml_node<> *root)
 
     ASSERT(nb_variables == variables.size(), "Number of variables read "
             << variables.size() << " differs from the number of variables declared.");
+}
+
+void Problem::parseXMLConstants(xml_node<> *root)
+{
+    xml_node<> *xcons = root->first_node("constants");
+    xml_node<> *xcon  = xcons->first_node("constant");
+    //int nb_variables = atoi(xvars->first_attribute("nbVariables")->value());
+
+    do
+    {
+        auto k = ConstantFactory::create(xcon);
+        constants.push_back(k);
+
+        std::cout << k->to_string() << std::endl;
+        xcon = xcon->next_sibling();
+    } while (xcon);
 }
 
 void Problem::parseXMLConstraints(xml_node<> *root)
@@ -218,7 +236,6 @@ void Problem::importWCSP(std::string fileName, InputParams::agent_t agtType)
 
 }
 
-
 //////////////////////////////////////////////
 void Problem::importUAI(std::string fileName, InputParams::agent_t agt)
 {
@@ -264,7 +281,6 @@ bool Problem::order_neig_des(int LHS, int RHS)
 {
     return getAgent(LHS)->getNbNeighbors() > getAgent(RHS)->getNbNeighbors();
 }
-
 
 void Problem::makePseudoTreeOrder()
 {
@@ -333,7 +349,6 @@ void Problem::makePseudoTreeOrder()
     }
 }
 
-
 void Problem::makePseudoTreeOrder(int root, int heur)
 {
 
@@ -378,7 +393,6 @@ void Problem::makePseudoTreeOrder(int root, int heur)
     savePseudoTree(vec_r, vec_h);
 
 }
-
 
 // level = starting level of this group of agents = prev group size + 1
 void Problem::makePseudoTreeOrder
@@ -426,8 +440,7 @@ void Problem::makePseudoTreeOrder
 
             for (int ci : N)
             {
-                if (!getAgent(ai)->isRoot() &&
-                    ci == getAgent(ai)->getParent()->getID())
+                if (!getAgent(ai)->isRoot() && ci == getAgent(ai)->getParent()->getID())
                     continue;
 
                 S.push(ci);
@@ -459,6 +472,8 @@ void Problem::makePseudoTreeOrder
     }
 
     // Set separator set.
+	// TODO: There may be an error here: {you want to build it starting by the leafs
+	//	upword}
     for (auto agtId : agentsId)
         getAgent(agtId)->getSeparator(); // it also builds one
 
@@ -466,7 +481,6 @@ void Problem::makePseudoTreeOrder
     if (level >= 0)
         setAgentsPriorities(root, level);
 }
-
 
 //
 // Generate Forest
@@ -517,7 +531,6 @@ std::vector<std::vector<int>> Problem::getForest()
     return forest;
 }
 
-
 void Problem::setAgentsPriorities(int root, int root_p)
 {
     std::queue<Agent::ptr> Q;
@@ -549,7 +562,6 @@ int Problem::getInducedWidth(std::vector<int> tree)
     return w_star;
 }
 
-
 int Problem::getInducedWidth()
 {
     int w_star = -1;
@@ -560,7 +572,6 @@ int Problem::getInducedWidth()
     }
     return w_star;
 }
-
 
 bool Problem::existsSavedPseudoTree()
 {
@@ -631,7 +642,6 @@ void Problem::loadPseudoTree()
     for (auto agt : Problem::agents)
         agt->getSeparator(); // it  builds one
 }
-
 
 void Problem::savePseudoTree(std::vector<int> vec_r, std::vector<int> vec_h)
 {

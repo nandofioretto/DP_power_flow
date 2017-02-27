@@ -11,12 +11,12 @@ Variable::Variable (std::vector<value_t> _values,  Agent::ptr& _agt,
 }
 
 
-Variable::Variable (value_t _min, value_t _max, Agent::ptr& _agt, value_t _prior)
+Variable::Variable (value_t _min, value_t _max, value_t discr, Agent::ptr& _agt, value_t _prior)
   : value(-1), prior(_prior), agt(_agt), agtID(_agt->getID()) {
 
     Variable::min = _min;
     Variable::max = _max;
-    for (int i=min; i<=max; i++)
+    for (value_t i=min; i<=max; i+=discr)
       values.push_back(i);
 }
 

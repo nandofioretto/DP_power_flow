@@ -80,9 +80,6 @@ void CpuBEAgent::utilPhaseProj()
 
 
 
-// [Todo-Fix] This is wrong: 
-// Other than computing this cost you also need to add it to the row of the 
-// table wich match with the current separator variables.
 void CpuBEAgent::valuePhase()
 {
   if (Agent::isRoot())

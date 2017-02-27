@@ -9,9 +9,9 @@
 #include "Preferences.hpp"
 
 //typedef long long int power_t; // Bit encoding [1111 1111] [1111 1111] .. [] this can represent loads and generators up to optH=8
-typedef int value_t;
+typedef double value_t;
 //typedef int value_t;
-typedef int util_t;
+typedef double util_t;
 //typedef int util_t;
 
 

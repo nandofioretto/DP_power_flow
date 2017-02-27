@@ -16,7 +16,7 @@
 		<domain name="dom_g2_and_g3" nbValues="7">-3..3</domain>
 		<domain name="dom_f12" nbValues="9">-4..4</domain>
 		<domain name="dom_f13" nbValues="7">-3..3</domain>
-		<domain name="dom_l" nbValues="3">-2..0</domain>
+		<domain name="dom_l" nbValues="3">-2..0,0.2</domain>
 	</domains>
 	<variables nbVariables="8">
 		<variable name="g1" domain="dom_g1" agent="agent_g1" />

@@ -49,6 +49,7 @@ set(SOURCE_FILES
         BooleanExpression.hpp
         MulConstraint.hpp
         Utils/xmlutils.h
-        XmulCConstraint.hpp)
+        XmulCConstraint.hpp
+        Constant.hpp ConstantFactory.hpp)
 
 add_library(cpuBE_core STATIC ${SOURCE_FILES})

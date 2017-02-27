@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/ch/epfl/lia/frodo/algorithms/XCSPschema.xsd">
+	<presentation name="test" maxConstraintArity="4" maximize="false" format="XCSP2.1" />
+	<agents nbAgents="4">
+		<agent name="bus1" />
+		<agent name="bus2" />
+		<agent name="bus3" />
+		<agent name="bus4" />
+	</agents>
+	<domains nbDomains="6">
+		<domain name="dom_v_magn">0.90..1.10 [0.01]</domain>
+		<domain name="dom_v_angle">-6.28..6.28 [0.01]</domain>
+		<domain name="dom_Pg1">0..0.45 [0.01]</domain>
+		<domain name="dom_Pg4">0..0.318 [0.01]</domain>
+		<domain name="dom_Qg1">-0.35..0.35 [0.01]</domain>
+		<domain name="dom_Qg4">-0.1..0.1 [0.01]</domain>
+	</domains>
+	<variables nbVariables="w12">
+		<variable name="v1_m"  domain="dom_v_magn"  agent="bus1" />
+		<variable name="v1_a"  domain="dom_v_angle" agent="bus1" />
+		<variable name="v2_m"  domain="dom_v_magn"  agent="bus2" />
+		<variable name="v2_a"  domain="dom_v_angle" agent="bus2" />
+		<variable name="v3_m"  domain="dom_v_magn"  agent="bus3" />
+		<variable name="v3_a"  domain="dom_v_angle" agent="bus3" />
+		<variable name="v4_m"  domain="dom_v_magn"  agent="bus4" />
+		<variable name="v4_a"  domain="dom_v_angle" agent="bus4" />
+		<variable name="Pg1"   domain="dom_Pg1"     agent="bus1" />
+		<variable name="Pg4"   domain="dom_Pg4"     agent="bus4" />
+		<variable name="Qg1"   domain="dom_Qg1"     agent="bus1" />
+		<variable name="Qg4"   domain="dom_Qg4"     agent="bus4" />
+	</variables>
+	<constants>
+		<constant name="Pd1">0.05<constant/>
+		<constant name="Pd2">0.17<constant/>
+		<constant name="Pd3">0.2<constant/>
+		<constant name="Pd4">0.08<constant/>
+		<constant name="Qd1">0.031<constant/>
+		<constant name="Qd2">0.105<constant/>
+		<constant name="Qd3">0.124<constant/>
+		<constant name="Qd4">0.05<constant/>
+		<constant name="Pf1">0.25<constant/>
+		<constant name="Pf2">0.25<constant/>
+		<constant name="Pf3">0.25<constant/>
+		<constant name="x1">19.84<constant/>
+		<constant name="x2">26.88<constant/>
+		<constant name="x3">26.88<constant/>
+		<constant name="Y" type="matrix" nbRows="4" nbColumns="4">
+			0.0720 0.0195 	0.0264 	0.0264
+			0.0195 0.0194	0		0
+			0.0264 0		0.0263	0
+			0.0264 0		0		0.0263
+		</constant>		
+		<constant name="Theta" type="matrix" nbRows="4" nbColumns="4">
+			-1.3731 1.7682 	 1.7682  	1.7682
+			1.7682 	-1.3729  0		    0
+			1.7682 	0		 -1.3731	0
+			1.7682	0		 0		    -1.3731
+		</constant>
+	</constants>
+	<constraints nbConstraints="24">
+		<constraint name="power_1" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a" constants="Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
+			<parameters> 
+				v1_m * SUM_i Y[1][{i}] * v{i}_m * cos(v1_a - v{1}_a - Theta[1][{i}])
+			</parameters>
+		</constraint>			
+		<constraint name="conserv_g1" arity="3" scope="Pg1 Pd power_1" reference="global:weightedSum">
+			<parameters>[ { 1 Pg1 } { -1 Pd1 } { -1 power_1 } ] <eq/>0</parameters>	
+		</constraint>	
+		<constraint name="power_2" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a" constants="Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
+			<parameters> 
+				v2_m * SUM_i Y[2][{i}] * v{i}_m * cos(v2_a - v{2}_a - Theta[2][{i}])
+			</parameters>
+		</constraint>
+		<constraint name="conserv_g2" arity="2" scope="Pd power_2" reference="global:weightedSum"> 	
+			<parameters>[ { -1 Pd2 } { -1 power_2 } ] <eq/>0</parameters>	
+		</constraint>	
+		<constraint name="power_3" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a" constants="Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
+			<parameters> 
+				v3_m * SUM_i Y[3][{i}] * v{i}_m * cos(v3_a - v{i}_a - Theta[3][{i}])
+			</parameters>
+		</constraint>			
+		<constraint name="conserv_g3" arity="2" scope="Pd power_3" reference="global:weightedSum"> 	
+			<parameters>[ { -1 Pd3 } { -1 power_3 } ] <eq/>0</parameters>	
+		</constraint>		
+		<constraint name="power_4" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a" constants="Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
+			<parameters> 
+				v4_m * SUM_i Y[4][{i}] * v{i}_m * cos(v4_a - v{i}_a - Theta[4][{i}])
+			</parameters>		
+		</constraint>
+		<constraint name="conserv_g4" arity="3" scope="Pg4 Pd power_4" reference="global:weightedSum"> 	
+			<parameters>[ { 1 Pg4 }{ -1 Pd4 } { -1 power_4 } ] <eq/>0</parameters>	
+		</constraint>			
+			
+		<constraint name="rpower_1" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a" constants="Y Theta" sum_index="i" range="1 2 3 4" reference="global:reactive_power_balance">
+			<parameters> 
+				v1_m * SUM_i Y[1][{i}] * v{i}_m * sin(v1_a - v{i}_a - Theta[1][{i}])
+			</parameters>
+		</constraint>
+		<constraint name="conserv_rg1" arity="3" scope="Qg1 Qd rpower_1" reference="global:weightedSum"> 	
+			<parameters>[ { 1 Qg1 }{ -1 Qd1 } { -1 rpower_1 } ] <eq/>0</parameters>	
+		</constraint>	
+		<constraint name="rpower_2" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a" constants="Y Theta" sum_index="i" range="1 2 3 4" reference="global:reactive_power_balance">
+			<parameters> 
+				v2_m * SUM_i Y[2][{i}] * v{i}_m * sin(v2_a - v{2}_a - Theta[2][{i}])
+			</parameters>	
+		</constraint>
+		<constraint name="conserv_rg2" arity="2" scope="Qd rpower_2" reference="global:weightedSum"> 	
+			<parameters>[ { -1 Qd2 } { -1 rpower_2 } ] <eq/>0</parameters>	
+		</constraint>	
+		<constraint name="rpower_3" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a" constants="Y Theta" sum_index="i" range="1 2 3 4" reference="global:reactive_power_balance">
+			<parameters> 
+				v3_m * SUM_i Y[3][{i}] * v{i}_m * sin(v3_a - v{i}_a - Theta[3][{i}])
+			</parameters>
+		</constraint>
+		<constraint name="conserv_rg3" arity="2" scope="Qd rpower_3" reference="global:weightedSum"> 	
+			<parameters>[ { -1 Qd3 } { -1 rpower_3 } ] <eq/>0</parameters>	
+		</constraint>
+		<constraint name="rpower_4" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a" constants="Y Theta" sum_index="i" range="1 2 3 4" reference="global:reactive_power_balance">
+			<parameters> 
+				v4_m *  SUM_i Y[4][{i}] * v{i}_m * sin(v4_a - v{i}_a - Theta[4][{i}])
+			</parameters>		
+		</constraint>
+		<constraint name="conserv_rg4" arity="3" scope="Qg4 Qd rpower_4" reference="global:weightedSum"> 	
+			<parameters>[ { 1 Qg4 }{ -1 Qd4 } { -1 rpower_4 } ] <eq/>0</parameters>	
+		</constraint>
+
+		<constraint name="Pflow_1" arity="3" scope="v1_m v1_a v2_a" constants="Y Theta" reference="global:line_flow">
+			<parameters> 
+				v1_m * v1_m * sin(v1_a - v2_a) * x1 
+			</parameters>		
+		</constraint>
+		<constraint name="conserv_Pf1" arity="1" scope="Pflow_1" reference="global:weightedSum"> 	
+			<parameters>[ { 1 abs(Pflow_1) } {-1 Pf1} ]<le/>0</parameters>	
+		</constraint>
+		<constraint name="Pflow_2" arity="3" scope="v1_m v1_a v3_a" constants="Y Theta" reference="global:line_flow">
+			<parameters> 
+				v1_m * v1_m * sin(v1_a - v3_a) * x2 
+			</parameters>		
+		</constraint>
+		<constraint name="conserv_Pf2" arity="1" scope="Pflow_2" reference="global:weightedSum"> 	
+			<parameters>[ { 1 abs(Pflow_2) } {-1 Pf2} ] <le/>0</parameters>	
+		</constraint>
+		<constraint name="Pflow_3" arity="3" scope="v1_m v1_a v4_a" constants="Y Theta" reference="global:line_flow">
+			<parameters> 
+				v1_m * v1_m * sin(v1_a - v4_a) * x3 
+			</parameters>		
+		</constraint>
+		<constraint name="conserv_Pf3" arity="1" scope="Pflow_3" reference="global:weightedSum"> 	
+			<parameters>[ { 1 abs(Pflow_3) } {-1 Pf3} ] <le/>0</parameters>	
+		</constraint>
+			
+		<constraint name="cost_g1" arity="1" scope="Pg1" reference="global:XmultC">
+			<parameters>10</parameters>
+		</constraint>
+		<constraint name="cost_g4" arity="1" scope="Pg4" reference="global:XmultC">
+			<parameters>100</parameters>
+		</constraint>	
+	</constraints>
+</instance>

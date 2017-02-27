@@ -30,7 +30,7 @@ public:
   // It constructs and returns a new variable, given its name, it's agent
   // owner, and its domain bounds.
   static Variable::ptr create(std::string name, Agent::ptr owner, 
-			      value_t min, value_t max);
+			      value_t min, value_t max, value_t discr=1);
   
   // It resets the variables counter.
   static void resetCt()
