@@ -50,6 +50,8 @@ set(SOURCE_FILES
         MulConstraint.hpp
         Utils/xmlutils.h
         XmulCConstraint.hpp
-        Constant.hpp ConstantFactory.hpp)
+        Constant.hpp ConstantFactory.hpp
+        PbalanceConstraint.h
+        QbalanceConstraint.h)
 
 add_library(cpuBE_core STATIC ${SOURCE_FILES})

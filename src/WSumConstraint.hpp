@@ -41,9 +41,9 @@ public:
         switch(expr)
         {
             case BooleanExpression::EQ:
-                return wsum(values) == rhs_val ? 0 : Constants::unsat;
+                return std::abs(wsum(values) - rhs_val) < precision ? 0 : Constants::unsat;
             case BooleanExpression::NEQ:
-                return wsum(values) != rhs_val ? 0 : Constants::unsat;
+                return std::abs(wsum(values) - rhs_val) >= precision ? 0 : Constants::unsat;
             case BooleanExpression::LT:
                 return wsum(values) < rhs_val ? 0 : Constants::unsat;
             case BooleanExpression::LEQ:
@@ -102,6 +102,7 @@ protected:
     // not explicitally listed in the relation.
     util_t defaultUtil;
 
+    const double precision = 1E-2;
     // The best and worst finite utils of this constraint which is used as bounds
     // in some searches.
     util_t LB;

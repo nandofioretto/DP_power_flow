@@ -70,9 +70,15 @@ public:
         return _values.size();
     }
 
+    const std::string &getName() const
+    {
+        return _name;
+    }
+
     std::string to_string() const
     {
         std::string out;
+        out += _name + ": ";
         for (int r = 0; r < _nRows; r++)
         {
             for (int c = 0; c < _nCols; c++)

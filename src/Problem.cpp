@@ -116,7 +116,7 @@ void Problem::parseXMLVariables(xml_node<> *root)
         auto var = VariableFactory::create(xvar, xdoms, agents);
         variables.push_back(var);
 
-        //std::cout << var->to_string() << std::endl;
+        std::cout << var->to_string() << std::endl;
 
         xvar = xvar->next_sibling();
     } while (xvar);
@@ -153,8 +153,7 @@ void Problem::parseXMLConstraints(xml_node<> *root)
         xml_node<> *xcon = xcons->first_node("constraint");
         do
         {
-            auto con =
-                    ConstraintFactory::create(xcon, xrels, xfuns, agents, variables);
+            auto con = ConstraintFactory::create(xcon, xrels, xfuns, agents, variables, constants);
             constraints.push_back(con);
 
             //std::cout << con->to_string() << std::endl;

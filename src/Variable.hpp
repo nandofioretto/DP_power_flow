@@ -41,24 +41,24 @@ public:
 
     value_t &operator[](std::size_t idx)
     {
-      return values[idx];
+        return values[idx];
     }
 
     const value_t &operator[](std::size_t idx) const
     {
-      return values[idx];
+        return values[idx];
     }
 
     bool operator==(const Variable &rhs) const
     {
-      // std::cout << "operator == Variable (classic)\n";
-      return agtID == rhs.getAgtID();
+        // std::cout << "operator == Variable (classic)\n";
+        return agtID == rhs.getAgtID();
     }
 
     bool operator==(const Variable::ptr &rhs) const
     {
-      //std::cout << "operator == Variable (std::ptr)\n";
-      return agtID == rhs->getAgtID();
+        //std::cout << "operator == Variable (std::ptr)\n";
+        return agtID == rhs->getAgtID();
     }
 
     // bool operator < (const Variable& other) const {
@@ -75,74 +75,74 @@ public:
 
     void setName(std::string _name)
     {
-      Variable::name = _name;
+        Variable::name = _name;
     }
 
     std::string getName() const
     {
-      return name;
+        return name;
     }
 
     int getAgtID() const
     {
-      return agtID;
+        return agtID;
     }
 
     std::shared_ptr<Agent> &getAgt()
     {
-      return agt;
+        return agt;
     }
 
     value_t getMin() const
     {
-      return min;
+        return min;
     }
 
     value_t getMax() const
     {
-      return max;
+        return max;
     }
 
     size_t getDomSize() const
     {
-      return values.size();
+        return values.size();
     }
 
     value_t getPrior() const
     {
-      return prior;
+        return prior;
     }
 
     const std::vector<value_t> &getValues() const
     {
-      return values;
+        return values;
     }
 
     void setPrior(value_t _pr)
     {
-      Variable::prior = _pr;
+        Variable::prior = _pr;
     }
 
     value_t getValue() const
     {
-      return value;
+        return value;
     }
 
     void setValue(value_t _val)
     {
-      Variable::value = _val;
+        Variable::value = _val;
     }
 
     std::string to_string() const
     {
-      std::string ret = name + " range: [" + std::to_string(getMin()) + " "
-                        + std::to_string(getMax()) + "] ";
-      if (prior != Constants::NaN)
-        ret += "Prior: " + std::to_string(prior);
+        std::string ret = name + " range: [" + std::to_string(getMin()) + " "
+                          + std::to_string(getMax()) + "] ";
+        if (prior != Constants::NaN)
+            ret += "Prior: " + std::to_string(prior);
 
-      /* for (value_t p : values) */
-      /*     ret += std::to_string(p) + ","; */
-      return ret;
+        for (value_t p : values)
+            ret += std::to_string(p) + ",";
+        return ret;
     }
 
 private:
