@@ -44,12 +44,19 @@ Variable::ptr VariableFactory::create(xml_node<>* varXML,
   
   std::string content = domXML->value();
   size_t ival = content.find("..");
-  ASSERT (ival != std::string::npos, "Cannot handle not contiguous domains");
+  // ASSERT (ival != std::string::npos, "Cannot handle not contiguous domains");
   size_t idis = content.find("[");
 
-  value_t min = std::stod(content.substr(0, ival));
-  value_t max = std::stod(content.substr(ival+2, idis - ival + 2));
-
+  value_t min = 0, max = 0;
+  if (ival == std::string::npos && idis == std::string::npos)
+  {
+    min = max = std::stod(content);
+  }
+  else
+  {
+    value_t min = std::stod(content.substr(0, ival));
+    value_t max = std::stod(content.substr(ival + 2, idis - ival + 2));
+  }
   value_t discr = (idis != std::string::npos)
                   ? std::stod(content.substr(idis+1))
                   : 1;

@@ -29,6 +29,6 @@ include_directories(${LIB_DIR}/misc_utils)    # Fioretto's miscellanoeus lib
 include_directories(src)
 
 add_subdirectory(src)
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 target_link_libraries(cpuBE cpuBE_core)
