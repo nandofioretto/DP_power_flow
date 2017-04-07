@@ -54,8 +54,8 @@ Variable::ptr VariableFactory::create(xml_node<>* varXML,
   }
   else
   {
-    value_t min = std::stod(content.substr(0, ival));
-    value_t max = std::stod(content.substr(ival + 2, idis - ival + 2));
+    min = std::stod(content.substr(0, ival));
+    max = std::stod(content.substr(ival + 2, idis - ival + 2));
   }
   value_t discr = (idis != std::string::npos)
                   ? std::stod(content.substr(idis+1))

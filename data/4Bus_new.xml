@@ -26,7 +26,7 @@
 	</domains>
 	<variables nbVariables="12">
 		<variable name="v1_m"  domain="dom_v_magn"  agent="bus1_vm" />
-		<variable name="v1_a"  domain="dom_v1_a" agent="bus1_va" />
+		<variable name="v1_a"  domain="dom_v1_a"    agent="bus1_va" />
 		<variable name="v2_m"  domain="dom_v_magn"  agent="bus2_vm" />
 		<variable name="v2_a"  domain="dom_v_angle" agent="bus2_va" />
 		<variable name="v3_m"  domain="dom_v_magn"  agent="bus3_vm" />
@@ -70,7 +70,7 @@
 					constants="Pd Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
 			<parameters>
 				-1 : Pd[2],
-				-1 : v2_m * SUM_i Y[2][{i}] * v{i}_m * cos(v2_a - v{2}_a - Theta[2][{i}])
+				-1 : v2_m * SUM_i Y[2][{i}] * v{i}_m * cos(v2_a - v{i}_a - Theta[2][{i}])
 				<eq>0</eq>
 			</parameters>
 		</constraint>
