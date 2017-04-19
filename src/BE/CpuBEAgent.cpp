@@ -49,7 +49,7 @@ void CpuBEAgent::initialize()
     CpuAggregator::join(joinedTable, table);
   }
 
-  std::cout << joinedTable->to_string() << "\n";
+  // std::cout << joinedTable->to_string() << "\n";
 }
 
 
@@ -61,7 +61,7 @@ void CpuBEAgent::utilPhaseAggr()
     auto chTable = BEagt->getTable();
     CpuAggregator::join(joinedTable, chTable);
   }
-  std::cout << "agent" << getName() << " - " << joinedTable->to_string() << "\n";
+  //std::cout << "agent" << getName() << " - " << joinedTable->to_string() << "\n";
 
 }
 
@@ -74,7 +74,7 @@ void CpuBEAgent::utilPhaseProj()
     // This assignment causes the previous table to be freed.
     joinedTable = CpuProjector::project(joinedTable, Agent::getVariable());
   }
-  std::cout << "Proj: agent" << getName() << " - " << joinedTable->to_string() << "\n";
+  //std::cout << "Proj: agent" << getName() << " - " << joinedTable->to_string() << "\n";
 
 }
 

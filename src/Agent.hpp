@@ -256,9 +256,8 @@ public:
     for (auto var : variables)
       ret += "\t" + var->to_string() + "\n";
     
-    ret += " Cons: (disabled)\n";
-//    for (auto con : constraints)
-//      ret += "\t" + con->to_string() + "\n";
+    for (auto con : constraints)
+      ret += "\t" + con->getName() + "\n";
     
     ret += " Neighbors=\t{"; 
     for (auto n : neighbors)

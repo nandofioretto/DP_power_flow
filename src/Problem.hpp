@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <rapidxml.hpp>
+#include <easylogging++.h>
 
 #include "Agent.hpp"
 #include "Constraint.hpp"
@@ -33,24 +34,24 @@ public:
             case InputParams::xml:
                 if (!Preferences::silent)
                 {
-                    std::cout << "Importing file XML...";
-                    std::flush(std::cout);
+                    LOG(INFO) << "Importing file XML...";
+                    //std::flush(std::cout);
                 }
                 importXML(fileName, agt);
                 break;
             case InputParams::wcsp:
                 if (!Preferences::silent)
                 {
-                    std::cout << "Iporting file WCSP...";
-                    std::flush(std::cout);
+                    LOG(INFO) << "Iporting file WCSP...";
+                    //std::flush(std::cout);
                 }
                 importWCSP(fileName, agt);
                 break;
             case InputParams::uai:
                 if (!Preferences::silent)
                 {
-                    std::cout << "Importing file UAI...";
-                    std::flush(std::cout);
+                    LOG(INFO) << "Importing file UAI...";
+                    //std::flush(std::cout);
                 }
                 importUAI(fileName, agt);
                 break;
@@ -58,7 +59,7 @@ public:
         makeMaps();
 
         if (!Preferences::silent)
-            std::cout << "\tok\n";
+            LOG(INFO) << "\tok\n";
     }
 
     static void importXML(std::string fileName, InputParams::agent_t agt);

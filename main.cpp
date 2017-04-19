@@ -9,11 +9,21 @@
 #include "BE/BESolver.hpp"
 #include "Utils/Timer.hpp"
 #include "Utils/CpuAllocator.hpp"
-#include "Utils/CpuInfo.hpp"
+
+#include <easylogging++.h>
+INITIALIZE_EASYLOGGINGPP
 
 
 int main(int argc, char **argv)
 {
+    // Load configuration from file
+    el::Configurations conf("../log-conf.conf");
+    // Reconfigure single logger
+    el::Loggers::reconfigureLogger("default", conf);
+    // Actually reconfigure all loggers instead
+    el::Loggers::reconfigureAllLoggers(conf);
+    // Now all the loggers will use configuration from file
+
     Timer<> initTimer;
     initTimer.start();
     // Parse Inputs and Initializes the GPU if necessary
@@ -25,6 +35,7 @@ int main(int argc, char **argv)
     /// Pseudo-Tree selection
     Problem::makePseudoTreeOrder();
     std::cout << Problem::to_string() << "\n";
+    LOG(INFO) << Problem::to_string();
 
     Cpu::Info::initialize();
     Assert::check(Problem::checkMemory(),

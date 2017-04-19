@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/ch/epfl/lia/frodo/algorithms/XCSPschema.xsd">
+	<presentation name="test" maxConstraintArity="5" maximize="false" format="XCSP2.1" />
+	<agents nbAgents="6">
+		<agent name="bus1_vm" />
+		<agent name="bus1_va" />
+		<agent name="bus2_vm" />
+		<agent name="bus2_va" />
+		<agent name="Pg_1" />
+		<agent name="Qg_1" />
+	</agents>
+	<domains nbDomains="5">
+		<domain name="dom_v_magn">1..1.1 [0.001]</domain>
+		<domain name="dom_v1_a">0</domain>
+		<domain name="dom_v2_a">-0.004..-0.002 [0.0001]</domain>
+		<domain name="dom_Pg1">0.09..0.13 [0.01]</domain>
+		<domain name="dom_Qg1">-0.07..-0.05 [0.001]</domain>
+	</domains>
+	<variables nbVariables="6">
+		<variable name="v1_m"  domain="dom_v_magn"  agent="bus1_vm" />
+		<variable name="v1_a"  domain="dom_v1_a"    agent="bus1_va" />
+		<variable name="v2_m"  domain="dom_v_magn"  agent="bus2_vm" />
+		<variable name="v2_a"  domain="dom_v2_a"    agent="bus2_va" />
+		<variable name="Pg1"   domain="dom_Pg1"     agent="Pg_1" />
+		<variable name="Qg1"   domain="dom_Qg1"     agent="Qg_1" />
+	</variables>
+	<constants>
+		<constant name="Pd" type="vector" nbRows="2">0.05 0.06</constant>
+		<constant name="Qd" type="vector" nbRows="2">0.024 0.025</constant>
+		<constant name="Y"  type="matrix" nbRows="2" nbColumns="2">
+			19.4057 19.4560
+			19.4560	19.4057
+		</constant>
+		<constant name="Theta" type="matrix" nbRows="2" nbColumns="2">
+			-1.3729 1.7682
+			1.7682  -1.3729
+		</constant>
+	</constants>
+	<constraints nbConstraints="5">
+		<constraint name="power_1" arity="5" scope="Pg1 v1_m v2_m v1_a v2_a"
+					constants="Pd Y Theta" sum_index="i" range="1 2" reference="global:active_power_balance">
+			<parameters>
+				 1 : Pg1,
+				-1 : Pd[1],
+				-1 : v1_m * SUM_i Y[1][{i}] * v{i}_m * cos(v1_a - v{i}_a - Theta[1][{i}])
+				<eq>0</eq>
+			</parameters>
+		</constraint>
+		<constraint name="power_2" arity="4" scope="v1_m v2_m v1_a v2_a"
+					constants="Pd Y Theta" sum_index="i" range="1 2" reference="global:active_power_balance">
+			<parameters>
+				-1 : Pd[2],
+				-1 : v2_m * SUM_i Y[2][{i}] * v{i}_m * cos(v2_a - v{i}_a - Theta[2][{i}])
+				<eq>0</eq>
+			</parameters>
+		</constraint>
+		<constraint name="rpower_1" arity="5" scope="Qg1 v1_m v2_m v1_a v2_a"
+					constants="Qd Y Theta" sum_index="i" range="1 2" reference="global:reactive_power_balance">
+			<parameters>
+				 1 : Qg1,
+				-1 : Qd[1],
+				-1 : v1_m * SUM_i Y[1][{i}] * v{i}_m * sin(v1_a - v{i}_a - Theta[1][{i}])
+				<eq>0</eq>
+			</parameters>
+		</constraint>
+		<constraint name="rpower_2" arity="4" scope="v1_m v2_m v1_a v2_a"
+					constants="Qd Y Theta" sum_index="i" range="1 2" reference="global:reactive_power_balance">
+			<parameters>
+				-1 : Qd[2],
+				-1 : v2_m * SUM_i Y[2][{i}] * v{i}_m * sin(v2_a - v{i}_a - Theta[2][{i}])
+				<eq>0</eq>
+			</parameters>
+		</constraint>
+		<constraint name="cost_g1" arity="1" scope="Pg1" reference="global:XmultC">
+			<parameters>10.0</parameters>
+		</constraint>
+	</constraints>
+</instance>

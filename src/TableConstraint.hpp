@@ -23,11 +23,11 @@ public:
             (std::vector<Variable::ptr> &_scope, util_t _defUtil)
             : defaultUtil(_defUtil), LB(Constants::inf), UB(Constants::inf)
     {
-      Constraint::scope = _scope;
-      for (auto &v : Constraint::scope)
-      {
-        scopeAgtID.push_back(v->getAgtID());
-      }
+        Constraint::scope = _scope;
+        for (auto &v : Constraint::scope)
+        {
+            scopeAgtID.push_back(v->getAgtID());
+        }
     }
 
     ~TableConstraint()
@@ -36,47 +36,56 @@ public:
 
     void setUtil(std::vector<value_t> &K, util_t _util)
     {
-      values[K] = _util;
+        values[K] = _util;
     }
 
     // It returns the util associated to the value assignemnt passed as a
     // parameter.
     util_t getUtil(std::vector<value_t> &K)
     {
-      auto it = values.find(K);
-      return (it != values.end()) ? it->second : defaultUtil;
+        auto it = values.find(K);
+        return (it != values.end()) ? it->second : defaultUtil;
     }
 
     util_t getDefaultUtil() const
     {
-      return defaultUtil;
+        return defaultUtil;
     }
 
     size_t getSizeBytes() const
     {
-      return values.size() * (getArity() + 1) * sizeof(size_t);
+        return values.size() * (getArity() + 1) * sizeof(size_t);
     }
 
     // It returns a Summary Description.
     virtual std::string to_string()
     {
-      std::string result = Constraint::name + " scope={";
-      for (int i = 0; i < getArity(); i++)
-        result += std::to_string(scope[i]->getAgtID()) + ", ";
-      result += "}";
+        std::string result = "Constraint: " + Constraint::name + " scope={";
+        for (int i = 0; i < getArity(); i++)
+            result += scope[i]->getName() + ", ";
+        result += "}";
 
-      result += "\n";
-      for (auto &kv: values)
-      {
-        result += "<";
-        for (int i : kv.first)
-          result += std::to_string(i) + " ";
-        result += "> : ";
-        result += std::to_string(kv.second) + " ";
         result += "\n";
-      }
-
-      return result;
+        int count = 0;
+        if (Preferences::log_constraints == Preferences::log_verbose)
+        {
+            for (auto &kv: values)
+            {
+                if (Constants::isSat(kv.second))
+                {
+                    count ++ ;
+                    result += "<";
+                    for (value_t i : kv.first)
+                        result += std::to_string(i) + " ";
+                    result += "> : ";
+                    result += Constants::isSat(kv.second) ? std::to_string(kv.second) : "Inf";
+                    result += "\n";
+                }
+            }
+            if (count == 0)
+                result += "UNFEASIBLE\n";
+        }
+        return result;
     }
 
 protected:
@@ -90,7 +99,6 @@ protected:
     // in some searches.
     util_t LB;
     util_t UB;
-
 };
 
 #endif // CUDA_DBE_TABLE_CONSTRAINT_HPP

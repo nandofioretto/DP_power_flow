@@ -21,6 +21,7 @@
 #include "QbalanceConstraint.h"
 #include "LineFlowConstraint.h"
 #include "Constant.hpp"
+#include <easylogging++.h>
 
 using namespace rapidxml;
 using namespace misc_utils;
@@ -79,6 +80,11 @@ Constraint::ptr ConstraintFactory::create(xml_node<>* conXML,
     else if (reference_name == "global:line_flow")
     {
         constraint = createLineFlowConstraint(conXML, variables, constants);
+    }
+
+    if (Preferences::log_constraints)
+    {
+        LOG(INFO) << constraint->to_string();
     }
 
     else if (utils::find(reference_name, relationNames))
@@ -222,7 +228,7 @@ TableConstraint::ptr ConstraintFactory::createPbalanceConstraint(rapidxml::xml_n
 {
     // Read Relation Properties
     string name = xmlutils::getStrAttribute(conXML, "name");
-    std::cout << "Generating P-Balance constraint " << name << "\n";
+    //std::cout << "Generating P-Balance constraint " << name << "\n";
 
     int   arity = xmlutils::getIntAttribute(conXML, "arity");
     vector<string> scope_str = strutils::split(conXML->first_attribute("scope")->value());
@@ -423,6 +429,7 @@ TableConstraint::ptr ConstraintFactory::createPbalanceConstraint(rapidxml::xml_n
             }
         }
         tabCon->setUtil(p, wsumCon->getUtil(tuple_values));
+        //LOG(INFO) << strutils::to_string(tuple_values) <<
 //        if (wsumCon->getUtil(tuple_values) == 0)
 //        {
 //            std::cout << "Found tuple: " << strutils::to_string(tuple_values) << "\n";
@@ -439,7 +446,7 @@ TableConstraint::ptr ConstraintFactory::createQbalanceConstraint(rapidxml::xml_n
 {
     // Read Relation Properties
     string name = xmlutils::getStrAttribute(conXML, "name");
-    std::cout << "Generating Q-Balance constraint " << name << "\n";
+    //std::cout << "Generating Q-Balance constraint " << name << "\n";
 
     int   arity = xmlutils::getIntAttribute(conXML, "arity");
     vector<string> scope_str = strutils::split(conXML->first_attribute("scope")->value());
@@ -664,7 +671,7 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
 {
     // Read Relation Properties
     string name = xmlutils::getStrAttribute(conXML, "name");
-    std::cout << "Generating Line Flow constraint " << name << "\n";
+    //std::cout << "Generating Line Flow constraint " << name << "\n";
 
     int   arity = xmlutils::getIntAttribute(conXML, "arity");
     vector<string> scope_str = strutils::split(conXML->first_attribute("scope")->value());
@@ -722,7 +729,7 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
     std::string const_x = split_function[6];
     value_t     const_x_val = getConstantValue(vec_const, const_x);
 
-    std::cout << const_x_val << "\n";
+    //std::cout << const_x_val << "\n";
 
     auto line_flow = std::make_shared<LineFlowConstraint>(scope);
     auto tabCon    = std::make_shared<TableConstraint>(scope, line_flow->getDefaultUtil());
@@ -750,7 +757,7 @@ TableConstraint::ptr ConstraintFactory::createXmultCConstraint
 {
     // Read Relation Properties
     string name = xmlutils::getStrAttribute(conXML, "name");
-    std::cout << "Generating Table constraint " << name << "\n";
+    //std::cout << "Generating Table constraint " << name << "\n";
 
     int arity = xmlutils::getIntAttribute(conXML, "arity");
 
@@ -785,7 +792,7 @@ TableConstraint::ptr ConstraintFactory::createXmultCConstraint
         return tabCon;
     }
     else {
-        auto con = std::make_shared<XmultCConstraint<double>>(scope, stoi(cStr));
+        auto con = std::make_shared<XmultCConstraint<double>>(scope, stod(cStr));
         auto tabCon = std::make_shared<TableConstraint>(scope, con->getDefaultUtil());
 
         for (value_t v : scope[0]->getValues()) {
@@ -802,7 +809,7 @@ TableConstraint::ptr ConstraintFactory::createWsumConstraint
 {
     // Read Relation Properties
     string name = xmlutils::getStrAttribute(conXML, "name");
-    std::cout << "Generating Wsum constraint " << name << "\n";
+    //std::cout << "Generating Wsum constraint " << name << "\n";
 
     int arity = xmlutils::getIntAttribute(conXML, "arity");
     std::vector<Variable::ptr> scope = getScope(conXML, variables);

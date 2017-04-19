@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "Preferences.hpp"
 
 class Constant
 {
@@ -79,13 +80,17 @@ public:
     {
         std::string out;
         out += _name + ": ";
-        for (int r = 0; r < _nRows; r++)
+
+        if (Preferences::log_constants == Preferences::log_verbose)
         {
-            for (int c = 0; c < _nCols; c++)
+            for (int r = 0; r < _nRows; r++)
             {
-                out += std::to_string(_values[r * _nRows + c]) + " ";
+                for (int c = 0; c < _nCols; c++)
+                {
+                    out += std::to_string(_values[r * _nRows + c]) + " ";
+                }
+                out += "\n";
             }
-            out += "\n";
         }
         return out;
     }

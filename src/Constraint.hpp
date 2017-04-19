@@ -14,69 +14,85 @@
 class Constraint
 {
 public:
-  typedef std::shared_ptr<Constraint> ptr;
+    typedef std::shared_ptr<Constraint> ptr;
 
-  // It creates a new constraint with empty name and automatically generated ID.
-  Constraint() {}
+    // It creates a new constraint with empty name and automatically generated ID.
+    Constraint()
+    {
+    }
 
-  virtual ~Constraint() {}
-  
-  // Returns the constraint arity.
-  int getArity() const { 
-    return scope.size();
-  }
+    virtual ~Constraint()
+    {
+    }
 
-  void setID(int _id) {
-    Constraint::ID = _id;
-  }
+    // Returns the constraint arity.
+    int getArity() const
+    {
+        return scope.size();
+    }
 
-  int getID() {
-    return ID;
-  }
+    void setID(int _id)
+    {
+        Constraint::ID = _id;
+    }
 
-  void setName(std::string _name) {
-    Constraint::name = _name;
-  }
+    int getID()
+    {
+        return ID;
+    }
 
-  std::string getName() {
-    return name;
-  }
+    void setName(std::string _name)
+    {
+        Constraint::name = _name;
+    }
 
-  virtual util_t getUtil(std::vector<value_t>& values) = 0;
+    std::string getName()
+    {
+        return name;
+    }
 
-  virtual void setUtil(std::vector<value_t>& values, util_t util) = 0;
+    virtual util_t getUtil(std::vector<value_t> &values) = 0;
 
-  // Returns the constraint scope.
-  std::vector<Variable::ptr>& getScope() {
-    return scope;
-  }
+    virtual void setUtil(std::vector<value_t> &values, util_t util) = 0;
 
-  std::vector<int>& getScopeAgentID() {
-    return scopeAgtID;
-  }
+    // Returns the constraint scope.
+    std::vector<Variable::ptr> &getScope()
+    {
+        return scope;
+    }
 
-  // Get the pos-th variable in the constraint scope.
-  Variable::ptr getVariableAt(size_t pos) const { 
-    return scope[ pos ]; 
-  }
+    std::vector<int> &getScopeAgentID()
+    {
+        return scopeAgtID;
+    }
 
-  int getAgentIDAt(size_t pos) const {
-    return scopeAgtID[pos]; 
-  }
+    // Get the pos-th variable in the constraint scope.
+    Variable::ptr getVariableAt(size_t pos) const
+    {
+        return scope[pos];
+    }
 
-  // It returns a Summary Description.
-  virtual std::string to_string() = 0;
+    int getAgentIDAt(size_t pos) const
+    {
+        return scopeAgtID[pos];
+    }
 
-  // It returns the size of the constraint in bytes.
-  virtual size_t getSizeBytes() {return 0; }
+    // It returns a Summary Description.
+    virtual std::string to_string() = 0;
+
+    // It returns the size of the constraint in bytes.
+    virtual size_t getSizeBytes()
+    {
+        return 0;
+    }
 
 protected:
-  int ID;
-  std::string name;
+    int ID;
+    std::string name;
 
-  // The scope of the constraint
-  std::vector<Variable::ptr> scope;
-  std::vector<int> scopeAgtID;
+    // The scope of the constraint
+    std::vector<Variable::ptr> scope;
+    std::vector<int> scopeAgtID;
 };
 
 

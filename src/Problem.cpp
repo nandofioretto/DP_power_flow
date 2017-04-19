@@ -12,6 +12,7 @@
 #include <stack>
 #include <queue>
 #include <string>
+#include <easylogging++.h>
 
 #include "Preferences.hpp"
 #include "Assert.hpp"
@@ -92,10 +93,12 @@ void Problem::parseXMLAgents(xml_node<> *root, InputParams::agent_t agtType)
     {
         std::string name = xagent->first_attribute("name")->value();
         auto agent = AgentFactory::create(name, agtType, InputParams::getAgentParam());
-        //auto agent = std::make_shared<Agent> (agentID++, name);
         agents.push_back(agent);
 
-        //std::cout << agent->to_string() << std::endl;
+        if (Preferences::log_agents)
+        {
+            LOG(INFO) << agent->to_string();
+        }
 
         xagent = xagent->next_sibling();
     } while (xagent);
@@ -116,8 +119,10 @@ void Problem::parseXMLVariables(xml_node<> *root)
         auto var = VariableFactory::create(xvar, xdoms, agents);
         variables.push_back(var);
 
-        std::cout << var->to_string() << std::endl;
-
+        if (Preferences::log_variables)
+        {
+            LOG(INFO) << var->to_string();
+        }
         xvar = xvar->next_sibling();
     } while (xvar);
 
@@ -136,7 +141,11 @@ void Problem::parseXMLConstants(xml_node<> *root)
         auto k = ConstantFactory::create(xcon);
         constants.push_back(k);
 
-        std::cout << k->to_string() << std::endl;
+        if (Preferences::log_constants)
+        {
+            //LOG(info) << k->to_string();
+        }
+
         xcon = xcon->next_sibling();
     } while (xcon);
 }
@@ -156,7 +165,10 @@ void Problem::parseXMLConstraints(xml_node<> *root)
             auto con = ConstraintFactory::create(xcon, xrels, xfuns, agents, variables, constants);
             constraints.push_back(con);
 
-            //std::cout << con->to_string() << std::endl;
+            if (Preferences::log_constraints)
+            {
+                LOG(INFO) << con->to_string();
+            }
 
             xcon = xcon->next_sibling();
         } while (xcon);
@@ -350,7 +362,6 @@ void Problem::makePseudoTreeOrder()
 
 void Problem::makePseudoTreeOrder(int root, int heur)
 {
-
     std::vector<std::vector<int>> forest = Problem::getForest();
     std::vector<int> vec_r;
     std::vector<int> vec_h;
@@ -592,7 +603,7 @@ void Problem::loadPseudoTree()
 
     std::string line;
     //TODO: Reinsert this line
-    // getline(ifs, line); // skip first line (root and heuristics)
+    getline(ifs, line); // skip first line (root and heuristics)
 
     while (getline(ifs, line))
     {

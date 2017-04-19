@@ -5,7 +5,7 @@ project(CpuBE)
 #include_directories(Utils)
 
 set(SOURCE_FILES
-    BE/BESolver.cpp
+        BE/BESolver.cpp
     BE/BESolver.hpp
     BE/CpuAggregator.cpp
     BE/CpuAggregator.hpp
