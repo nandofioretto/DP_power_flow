@@ -36,6 +36,9 @@ public:
     {
         ASSERT( values.size() == 4, "Error in processing Line flow constraint. Expected 4 arguments");
         util_t util = values[0] * values[0] * sin(values[1] - values[2]) * values[3];
+        LOG(INFO) << values[0] << " * " << values[0]  << " * sin("
+                  << values[1] << " - " << values[2] << ") * "
+                  << values[3] << " = " << util;
         return util;
     }
 

@@ -228,7 +228,8 @@ TableConstraint::ptr ConstraintFactory::createPbalanceConstraint(rapidxml::xml_n
 {
     // Read Relation Properties
     string name = xmlutils::getStrAttribute(conXML, "name");
-    //std::cout << "Generating P-Balance constraint " << name << "\n";
+
+    std::string to_log = "Generating P-Balance constraint " + name + "\n";
 
     int   arity = xmlutils::getIntAttribute(conXML, "arity");
     vector<string> scope_str = strutils::split(conXML->first_attribute("scope")->value());
@@ -263,6 +264,8 @@ TableConstraint::ptr ConstraintFactory::createPbalanceConstraint(rapidxml::xml_n
     std::vector<char> delim = { ')', '\t', '\r'};
     function = strutils::erase(function, delim);
     vector<string> split_sum = strutils::split(function, ',');
+
+    to_log += function + "\n";      //// log
 
     // weights of the weighted sum
     vector<double> terms_weight;
@@ -395,6 +398,12 @@ TableConstraint::ptr ConstraintFactory::createPbalanceConstraint(rapidxml::xml_n
         /////////////
     }
 
+    for (auto& _vs_ : terms_str_elements) {
+        to_log += strutils::to_string(_vs_) + "\n";
+    }
+
+    LOG(INFO) << to_log;
+
     double rhs_val = stoi(xml_rel->value());
     std::vector<Variable::ptr> TMP;
     auto wsumCon = std::make_shared<WSumConstraint<double>>(TMP, terms_weight, bexpr, rhs_val);
@@ -406,6 +415,8 @@ TableConstraint::ptr ConstraintFactory::createPbalanceConstraint(rapidxml::xml_n
 
     for (auto& p : perms_big_expr.getPermutations())
     {
+        LOG(INFO) << "computing var. combination: " << strutils::to_string(p);
+
         for (int w = 0; w < terms_weight.size(); w++)
         {
             if (terms_type[w] == "var")
@@ -429,6 +440,7 @@ TableConstraint::ptr ConstraintFactory::createPbalanceConstraint(rapidxml::xml_n
             }
         }
         tabCon->setUtil(p, wsumCon->getUtil(tuple_values));
+
         //LOG(INFO) << strutils::to_string(tuple_values) <<
 //        if (wsumCon->getUtil(tuple_values) == 0)
 //        {
@@ -447,6 +459,8 @@ TableConstraint::ptr ConstraintFactory::createQbalanceConstraint(rapidxml::xml_n
     // Read Relation Properties
     string name = xmlutils::getStrAttribute(conXML, "name");
     //std::cout << "Generating Q-Balance constraint " << name << "\n";
+
+    std::string to_log = "Generating Q-Balance constraint " + name + "\n";
 
     int   arity = xmlutils::getIntAttribute(conXML, "arity");
     vector<string> scope_str = strutils::split(conXML->first_attribute("scope")->value());
@@ -483,6 +497,8 @@ TableConstraint::ptr ConstraintFactory::createQbalanceConstraint(rapidxml::xml_n
     function = strutils::erase(function, delim);
     vector<string> split_sum = strutils::split(function, ',');
 
+    to_log += function + "\n";      //// log
+
     // weights of the weighted sum
     vector<double> terms_weight;
 
@@ -614,6 +630,12 @@ TableConstraint::ptr ConstraintFactory::createQbalanceConstraint(rapidxml::xml_n
         /////////////
     }
 
+    for (auto& _vs_ : terms_str_elements) {
+        to_log += strutils::to_string(_vs_) + "\n";
+    }
+
+    LOG(INFO) << to_log;
+
     double rhs_val = stoi(xml_rel->value());
     std::vector<Variable::ptr> TMP;
     auto wsumCon = std::make_shared<WSumConstraint<double>>(TMP, terms_weight, bexpr, rhs_val);
@@ -625,6 +647,8 @@ TableConstraint::ptr ConstraintFactory::createQbalanceConstraint(rapidxml::xml_n
 
     for (auto& p : perms_big_expr.getPermutations())
     {
+        LOG(INFO) << "computing var. combination: " << strutils::to_string(p);
+
         for (int w = 0; w < terms_weight.size(); w++)
         {
             if (terms_type[w] == "var")
@@ -673,6 +697,8 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
     string name = xmlutils::getStrAttribute(conXML, "name");
     //std::cout << "Generating Line Flow constraint " << name << "\n";
 
+    std::string to_log = "Generating LineFlow constraint " + name + "\n";
+
     int   arity = xmlutils::getIntAttribute(conXML, "arity");
     vector<string> scope_str = strutils::split(conXML->first_attribute("scope")->value());
     vector<Variable::ptr> scope     = getScope(conXML, variables);
@@ -704,6 +730,8 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
 
     ASSERT(split_sum.size() == 2,
            " Error processing line flow constraint. Expected 2 parameters in the weighted sum.");
+
+    to_log += function + "\n";
 
     // weights of the weighted sum
     double w1=1,
@@ -740,12 +768,16 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
 
     for (auto& p : perms.getPermutations())
     {
+        LOG(INFO) << "computing var. combination: " << strutils::to_string(p);
+
         for (int i = 0; i < unrolled_values.size() - 1; i++)
         {
             unrolled_values[ i ] = p[ i ];
         }
 
         double val = (w1 * c1) + (w2 * abs(line_flow->getUtil(unrolled_values)));
+        LOG(INFO) << "(" << w1 << " * " << c1 << ") + (" << w2 << " *  abs("
+                   << line_flow->getUtil(unrolled_values) << ")) = " << val;
         tabCon->setUtil(p, val);
     }
 

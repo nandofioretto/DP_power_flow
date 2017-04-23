@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <easylogging++.h>
 
 #include "string_utils.hpp"
 #include "Types.hpp"
@@ -86,10 +87,14 @@ protected:
     inline weight_t wsum(const std::vector<value_t> &values) const {
         if (values.size() != weights.size() )
             throw std::logic_error("values and weights vector sizes differ");
+        std::string to_log = "Weighted Sum: ";
         weight_t wsum = 0;
         for (int i=0; i<weights.size(); i++) {
             wsum += values[i] * weights[i];
+            to_log += std::to_string(values[i]) + " * " + std::to_string(weights[i]) + " + ";
         }
+        to_log += " = " + std::to_string(wsum) + "\n";
+        LOG(INFO) << to_log;
         return wsum;
     }
 
