@@ -62,8 +62,10 @@ public:
     //return Problem::getAgent(Preferences::ptRoot)->getUtil();
     util_t util = 0;
     for (auto agt : Problem::getAgents()){
-      if (agt->isRoot()) 
-        util += agt->getUtil();
+      if (agt->isRoot())
+      {
+          util += agt->getUtil();
+      }
     }
     return util;
   }

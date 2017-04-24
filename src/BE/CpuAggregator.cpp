@@ -64,7 +64,7 @@ void CpuAggregator::join(CpuTable::ptr& out, const CpuTable::ptr& in)
     mod[inScopeSize - 1] = in->getScope().back()->getDomSize();
 
     bool eq = false;
-    for (int i_out = 0; i_out < out->getSize(); i_out++)
+    for (size_t i_out = 0; i_out < out->getSize(); i_out++)
     {
         size_t i_in = getIdx(mult, div, mod, i_out);
         out->incrUtil(i_out, in->getUtil(i_in));

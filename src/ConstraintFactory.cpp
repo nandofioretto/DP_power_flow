@@ -126,12 +126,10 @@ Constraint::ptr ConstraintFactory::create(xml_node<>* conXML,
     // Proces constraints according to their type.
     // string semantics = relXML->first_attribute("semantics")->value();
 
-    #ifdef TEMP
     if (!constraint)
         throw std::logic_error("Error in parsing constraint " + name);
 
     setProperties(constraint, name, agents);
-    #endif
     ++constraintsCt;
     return constraint;
 }

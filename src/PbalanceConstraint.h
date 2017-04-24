@@ -46,10 +46,10 @@ public:
         int n_iter = (values.size() - 1) / 5;
         for (int i = 0; i < n_iter; i++)
         {
-            util_t u = values[i+0] * values[i+1]  * cos(values[i+2] - values[i+3] - values[i+4]);
+            util_t u = values[i*4 + 0] * values[i*4 + 1]  * cos(values[i*4 + 2] - values[i*4 + 3] - values[i*4 + 4]);
             util += u;
-            LOG(INFO) << values[i+0] << " * " << values[i+1] << " * cos(" << values[i+2]  << " - " << values[i+3]
-                      << " - " << values[i+4] << ") = " << u;
+            LOG(INFO) << values[i*4 + 0] << " * " << values[i*4 + 1] << " * cos(" << values[i*4 + 2]  << " - " << values[i*4 + 3]
+                      << " - " << values[i*4 + 4] << ") = " << u;
         }
         LOG(INFO) << "SUM_i = " << util << " * (last term) " << values.back() << " = " << util * values.back();
         util *= values.back();
