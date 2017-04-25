@@ -1,5 +1,7 @@
+.build/
 build/
 bin/
+lib/*.a
 todo.md
 .idea/
 cmake-build-debug/*

@@ -45,7 +45,7 @@ public:
         int n_iter = (values.size() - 1) / 5;
         for (int i = 0; i < n_iter; i++)
         {
-            util += values[i*4 + 0] * values[i*4 + 1]  * sin(values[i*4 + 2] - values[i*4 + 3] - values[i*4 + 4]);
+            util += values[i*5 + 0] * values[i*5 + 1]  * sin(values[i*5 + 2] - values[i*5 + 3] - values[i*5 + 4]);
         }
         util *= values.back();
         return util;
