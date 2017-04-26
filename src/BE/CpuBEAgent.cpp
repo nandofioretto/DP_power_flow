@@ -49,7 +49,7 @@ void CpuBEAgent::initialize()
         CpuAggregator::join(joinedTable, table);
     }
 
-    std::cout << joinedTable->to_string() << "\n";
+    //std::cout << joinedTable->to_string() << "\n";
 }
 
 
@@ -75,7 +75,6 @@ void CpuBEAgent::utilPhaseProj()
         joinedTable = CpuProjector::project(joinedTable, Agent::getVariable());
     }
     //std::cout << "Proj: agent" << getName() << " - " << joinedTable->to_string() << "\n";
-
 }
 
 
@@ -92,24 +91,39 @@ void CpuBEAgent::valuePhase()
     {
         auto &scope = saved_joinedTable->getScope();
         std::vector<value_t> vals(scope.size());
+        std::vector<value_t> vals_idx(scope.size());
         for (int i = 0; i < scope.size() - 1; i++)
         {
             vals[i] = scope[i]->getValue();
+            vals_idx[i] = scope[i]->getValueIdx();
         }
 
         value_t bestVal = 0;
         util_t bestUtil = Constants::worstvalue;
         auto &var = Agent::getVariable();
-        for (value_t d = var->getMin(); d <= var->getMax(); d++)
+
+        for (int i = 0; i < var->getDomSize(); i++)
         {
-            vals[scope.size() - 1] = d;
-            util_t util = saved_joinedTable->getUtil(vals);
+            vals_idx[scope.size() - 1] = i;
+            util_t util = saved_joinedTable->getUtilFromIdx(vals_idx);
             if (util OP bestUtil)
             {
                 bestUtil = util;
-                bestVal = d;
+                bestVal = var->at(i);
             }
         }
+
+//        for (value_t d = var->getMin(); d <= var->getMax(); d++)
+//        {
+//            vals[scope.size() - 1] = d;
+//            util_t util = saved_joinedTable->getUtil(vals);
+//            if (util OP bestUtil)
+//            {
+//                bestUtil = util;
+//                bestVal = d;
+//            }
+//        }
+
         #ifdef FALSE
         auto ancestors = utils::concat(Agent::getParent(), Agent::getPseudoParents());
         std::sort(ancestors.begin(), ancestors.end(), Agent::orderLt);

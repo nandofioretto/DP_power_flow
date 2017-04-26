@@ -18,7 +18,7 @@ public:
     enum log_details_t {log_off=0, log_summary=1, log_verbose=2};
 
     // The precision for equality constraints
-    static constexpr double precision = 1E-2;
+    static constexpr double precision = 0.0019;
 
     // Log details:
     static constexpr log_details_t log_constraints = log_verbose;

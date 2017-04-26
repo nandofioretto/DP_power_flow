@@ -45,8 +45,13 @@ public:
         int n_iter = (values.size() - 1) / 5;
         for (int i = 0; i < n_iter; i++)
         {
-            util += values[i*5 + 0] * values[i*5 + 1]  * sin(values[i*5 + 2] - values[i*5 + 3] - values[i*5 + 4]);
+            util_t u = values[i*5 + 0] * values[i*5 + 1]  * sin(values[i*5 + 2] - values[i*5 + 3] - values[i*5 + 4]);
+            util += u;
+            LOG(INFO) << values[i*5 + 0] << " * " << values[i*5 + 1] << " * sin(" << values[i*5 + 2]  << " - "
+                      << values[i*5 + 3] << " - " << values[i*5 + 4] << ") = " << u;
+
         }
+        LOG(INFO) << "SUM_i = " << util << " * (last term) " << values.back() << " = " << util * values.back();
         util *= values.back();
         return util;
     }

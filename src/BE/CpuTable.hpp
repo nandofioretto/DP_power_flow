@@ -95,6 +95,34 @@ public:
         return getUtil(idx);
     }
 
+    util_t getUtilFromIdx(std::vector<value_t>& scope_values)
+    {
+        size_t idx = 0;
+        size_t mult = 1;
+        for (int i = scope.size() - 1; i >= 0; i--)
+        {
+            idx  += scope_values[i] * mult;
+            mult *= scope[i]->getDomSize();
+        }
+        return getUtil(idx);
+    }
+
+
+//    util_t getUtil(std::vector<value_t>& scope_values)
+//    {
+//#define ENTRY(a, x, y) a[(y) * max_int + (x)]
+//
+//        for (int i = 0; i < scope.size(); i++)
+//        {
+//            // if ( std::abs( scope_values[i] - values) <= 1E-6)
+//            if (values[i])
+//
+//        }
+//#undef PREC
+//        return getUtil(idx);
+//    }
+//
+
     std::string to_string() const
     {
         std::string res;

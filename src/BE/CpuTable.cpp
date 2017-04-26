@@ -92,7 +92,7 @@ CpuTable::CpuTable(std::vector<Agent::ptr> agts)
     }
     std::sort(prIdxStore.begin(), prIdxStore.end(), std::less<std::pair<int, int>>());
 
-    std::cout << strutils::to_string(prIdxStore) << "\n";
+    //std::cout << strutils::to_string(prIdxStore) << "\n";
 
     // New Ordered Constraint Scope (descending order)
     CpuTable::scope.resize(agts.size());

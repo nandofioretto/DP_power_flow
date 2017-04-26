@@ -10,6 +10,8 @@
 #include <memory>
 #include <algorithm>
 #include <iostream>
+#include <unordered_map>
+#include "Assert.hpp"
 
 #include "Types.hpp"
 
@@ -40,6 +42,11 @@ public:
              value_t prior = Constants::NaN);
 
     value_t &operator[](std::size_t idx)
+    {
+        return values[idx];
+    }
+
+    value_t at(std::size_t idx)
     {
         return values[idx];
     }
@@ -128,9 +135,24 @@ public:
         return value;
     }
 
+    int getValueIdx()
+    {
+        ASSERT(value_idx != -1, "Error assigning value to variable " << name);
+        return value_idx;
+    }
+
     void setValue(value_t _val)
     {
-        Variable::value = _val;
+        value_idx = -1;
+        for (int i = 0; i < values.size(); i++)
+            if (std::abs(values[i] - _val) < 1E-10)
+            {
+                value_idx = i;
+                break;
+            }
+        ASSERT(value_idx != -1, "Error assigning value to variable " << name);
+
+        Variable::value = values[value_idx];
     }
 
     std::string to_string() const
@@ -151,6 +173,9 @@ private:
     value_t prior;
     std::vector<value_t> values;
     value_t value; // selected value.
+    int value_idx;
+
+    std::unordered_map<value_t, int> value_idx_map;
 
     std::shared_ptr<Agent> agt;
     int agtID;

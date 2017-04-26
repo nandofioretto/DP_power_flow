@@ -1,13 +1,15 @@
 #include "Variable.hpp"
 #include "Agent.hpp"
 
-Variable::Variable (std::vector<value_t> _values,  Agent::ptr& _agt, 
-		    value_t _prior)
+Variable::Variable (std::vector<value_t> _values,  Agent::ptr& _agt, value_t _prior)
   : value(-1), prior(_prior), values(_values), agt(_agt), agtID(_agt->getID()) {
   
   std::sort(Variable::values.begin(), Variable::values.end());
   min = values.front();
   max = values.back();
+
+    for (int i = 0; i < values.size(); i++)
+        value_idx_map[values[i]] = i;
 }
 
 
@@ -16,8 +18,12 @@ Variable::Variable (value_t _min, value_t _max, value_t discr, Agent::ptr& _agt,
 
     Variable::min = _min;
     Variable::max = _max;
-    for (value_t i=min; i<=max; i+=discr)
-      values.push_back(i);
+    int i = 0;
+    for (value_t v=min; v<=max; v+=discr)
+    {
+        values.push_back(v);
+        value_idx_map[i++] = v;
+    }
 }
 
 

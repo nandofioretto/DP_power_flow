@@ -34,7 +34,6 @@ int main(int argc, char **argv)
 
     /// Pseudo-Tree selection
     Problem::makePseudoTreeOrder();
-    std::cout << Problem::to_string() << "\n";
     LOG(INFO) << Problem::to_string();
 
     Cpu::Info::initialize();
