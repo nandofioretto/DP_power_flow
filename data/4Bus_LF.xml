@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/ch/epfl/lia/frodo/algorithms/XCSPschema.xsd">
+	<presentation name="test" maxConstraintArity="4" maximize="false" format="XCSP2.1" />
+	<agents nbAgents="12">
+		<agent name="bus1_vm" />
+		<agent name="bus1_va" />
+		<agent name="bus2_vm" />
+		<agent name="bus2_va" />
+		<agent name="bus3_vm" />
+		<agent name="bus3_va" />
+		<agent name="bus4_vm" />
+		<agent name="bus4_va" />
+		<agent name="Pg_1" />
+		<agent name="Pg_4" />
+		<agent name="Qg_1" />
+		<agent name="Qg_4" />
+	</agents>
+	<domains nbDomains="12">
+		<domain name="dom_v1_m">1.1</domain>
+		<domain name="dom_v1_a">0</domain>
+		<domain name="dom_v2_m">1.097</domain>
+		<domain name="dom_v2_a">-0.0069</domain>
+		<domain name="dom_v3_m">1.096</domain>
+		<domain name="dom_v3_a">-0.0058</domain>
+		<domain name="dom_v4_m">1.1</domain>
+		<domain name="dom_v4_a">0.0016</domain>
+		<domain name="dom_Pg1">0.3705</domain>
+		<domain name="dom_Pg4">0.13</domain>
+		<domain name="dom_Qg1">-0.0496</domain>
+		<domain name="dom_Qg4">-0.0156</domain>
+	</domains>
+	<variables nbVariables="12">
+		<variable name="v1_m"  domain="dom_v1_m"    agent="bus1_vm" />
+		<variable name="v1_a"  domain="dom_v1_a"    agent="bus1_va" />
+		<variable name="v2_m"  domain="dom_v2_m"    agent="bus2_vm" />
+		<variable name="v2_a"  domain="dom_v2_a"    agent="bus2_va" />
+		<variable name="v3_m"  domain="dom_v3_m"    agent="bus3_vm" />
+		<variable name="v3_a"  domain="dom_v3_a"    agent="bus3_va" />
+		<variable name="v4_m"  domain="dom_v4_m"    agent="bus4_vm" />
+		<variable name="v4_a"  domain="dom_v4_a"    agent="bus4_va" />
+		<variable name="Pg1"   domain="dom_Pg1"     agent="Pg_1" />
+		<variable name="Pg4"   domain="dom_Pg4"     agent="Pg_4" />
+		<variable name="Qg1"   domain="dom_Qg1"     agent="Qg_1" />
+		<variable name="Qg4"   domain="dom_Qg4"     agent="Qg_4" />
+	</variables>
+	<constants>
+		<constant name="Pd" type="vector" nbRows="4">0.05 0.17 0.20 0.08</constant>
+		<constant name="Qd" type="vector" nbRows="4">0.024 0.082 0.103 0.034</constant>
+		<constant name="Pf" type="vector" nbRows="3">0.20 0.25 0.05</constant>
+		<constant name="x"  type="vector" nbRows="3">19.8413 26.8817 26.8817</constant>
+		<constant name="Y"  type="matrix" nbRows="4" nbColumns="4">
+			72.0491 19.456 	26.3597 26.3597
+			19.456 	19.456	0	0
+			26.3597 0	26.3597	0
+			26.3597 0	0	26.3597
+		</constant>
+		<constant name="Theta" type="matrix" nbRows="4" nbColumns="4">
+			-1.3731 1.7682 	 1.7682  1.7682
+			1.7682 	-1.3729  0	 0
+			1.7682 	0	 -1.3731 0
+			1.7682	0	 0       -1.3731
+		</constant>
+	</constants>
+	<constraints nbConstraints="16">
+		<constraint name="power_1" arity="9" scope="Pg1 v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a"
+					constants="Pd Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
+			<parameters>
+				1 : Pg1,
+				-1 : Pd[1],
+				-1 : v1_m * SUM_i Y[1][{i}] * v{i}_m * cos(v1_a - v{i}_a - Theta[1][{i}])
+				<eq> 0 </eq>
+			</parameters>
+		</constraint>
+		<constraint name="power_2" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a"
+					constants="Pd Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
+			<parameters>
+				-1 : Pd[2],
+				-1 : v2_m * SUM_i Y[2][{i}] * v{i}_m * cos(v2_a - v{i}_a - Theta[2][{i}])
+				<eq>0</eq>
+			</parameters>
+		</constraint>
+		<constraint name="power_3" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a"
+					constants="Pd Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
+			<parameters>
+				-1 : Pd[3],
+				-1 : v3_m * SUM_i Y[3][{i}] * v{i}_m * cos(v3_a - v{i}_a - Theta[3][{i}])}
+				<eq> 0 </eq>
+			</parameters>
+		</constraint>
+		<constraint name="power_4" arity="9" scope="Pg4 v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a"
+					constants="Pd Y Theta" sum_index="i" range="1 2 3 4" reference="global:active_power_balance">
+			<parameters>
+				1  : Pg4,
+				-1 : Pd[4],
+				-1 : v4_m * SUM_i Y[4][{i}] * v{i}_m * cos(v4_a - v{i}_a - Theta[4][{i}])
+				<eq> 0 </eq>
+			</parameters>
+		</constraint>
+		<constraint name="rpower_1" arity="9" scope="Qg1 v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a"
+					constants="Qd Y Theta" sum_index="i" range="1 2 3 4" reference="global:reactive_power_balance">
+			<parameters>
+				1 : Qg1,
+				-1 : Qd[1],
+				-1 : v1_m * SUM_i Y[1][{i}] * v{i}_m * sin(v1_a - v{i}_a - Theta[1][{i}])
+				<eq> 0 </eq>
+			</parameters>
+		</constraint>
+		<constraint name="rpower_2" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a"
+					constants="Qd Y Theta" sum_index="i" range="1 2 3 4" reference="global:reactive_power_balance">
+			<parameters>
+				-1 : Qd[2],
+				-1 : v2_m * SUM_i Y[2][{i}] * v{i}_m * sin(v2_a - v{2}_a - Theta[2][{i}])
+				<eq> 0 </eq>
+			</parameters>
+		</constraint>
+		<constraint name="rpower_3" arity="8" scope="v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a"
+					constants="Qd Y Theta" sum_index="i" range="1 2 3 4" reference="global:reactive_power_balance">
+			<parameters>
+				-1 : Qd[3],
+				-1 : v3_m * SUM_i Y[3][{i}] * v{i}_m * sin(v3_a - v{i}_a - Theta[3][{i}])
+				<eq> 0 </eq>
+			</parameters>
+		</constraint>
+		<constraint name="rpower_4" arity="9" scope="Qg4 v1_m v2_m v3_m v4_m v1_a v2_a v3_a v4_a"
+					constants="Qd Y Theta" sum_index="i" range="1 2 3 4" reference="global:reactive_power_balance">
+			<parameters>
+				1 : Qg4,
+				-1 : Qd[4],
+				-1 : v4_m *  SUM_i Y[4][{i}] * v{i}_m * sin(v4_a - v{i}_a - Theta[4][{i}])
+				<eq> 0 </eq>
+			</parameters>
+		</constraint>
+		<constraint name="Pflow_12" arity="3" scope="v1_m v1_a v2_a" constants="Pf x" reference="global:line_flow">
+			<parameters>
+				-1 : Pf[1],
+				1  : abs( v1_m * v1_m * sin(v1_a - v2_a) * x[1] )
+				<leq>0</leq>
+			</parameters>
+		</constraint>
+		<constraint name="Pflow_13" arity="3" scope="v1_m v1_a v3_a" constants="Pf x" reference="global:line_flow">
+			<parameters>
+				-1 : Pf[2],
+				1  :  abs( v1_m * v1_m * sin(v1_a - v3_a) * x[2] )
+				<leq>0</leq>
+			</parameters>
+		</constraint>
+		<constraint name="Pflow_14" arity="3" scope="v1_m v1_a v4_a" constants="Pf x" reference="global:line_flow">
+			<parameters>
+				-1 : Pf[3],
+				1  : abs(v1_m * v1_m * sin(v1_a - v4_a) * x[3])
+				<leq>0</leq>
+			</parameters>
+		</constraint>
+		<constraint name="Pflow_21" arity="3" scope="v1_m v1_a v2_a" constants="Pf x" reference="global:line_flow">
+			<parameters>
+				-1 : Pf[1],
+				1  : abs( v2_m * v2_m * sin(v2_a - v1_a) * x[1] )
+				<leq>0</leq>
+			</parameters>
+		</constraint>
+		<constraint name="Pflow_31" arity="3" scope="v1_m v1_a v3_a" constants="Pf x" reference="global:line_flow">
+			<parameters>
+				-1 : Pf[2],
+				1  :  abs( v3_m * v3_m * sin(v3_a - v1_a) * x[2] )
+				<leq>0</leq>
+			</parameters>
+		</constraint>
+		<constraint name="Pflow_41" arity="3" scope="v1_m v1_a v4_a" constants="Pf x" reference="global:line_flow">
+			<parameters>
+				-1 : Pf[3],
+				1  : abs(v4_m * v4_m * sin(v4_a - v1_a) * x[3])
+				<leq>0</leq>
+			</parameters>
+		</constraint>
+		<constraint name="cost_g1" arity="1" scope="Pg1" reference="global:XmultC">
+			<parameters>100.0</parameters>
+		</constraint>
+		<constraint name="cost_g4" arity="1" scope="Pg4" reference="global:XmultC">
+			<parameters>10.0</parameters>
+		</constraint>
+	</constraints>
+</instance>

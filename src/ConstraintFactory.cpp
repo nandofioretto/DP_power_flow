@@ -759,11 +759,15 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
 
     auto line_flow = std::make_shared<LineFlowConstraint>(scope);
     auto tabCon    = std::make_shared<TableConstraint>(scope, line_flow->getDefaultUtil());
+    std::vector<Variable::ptr> TMP;
+    vector<double> terms_weight = {w1, w2};
+    double rhs_val = stoi(xml_rel->value());
+    auto wsumCon = std::make_shared<WSumConstraint<double>>(TMP, terms_weight, bexpr, rhs_val);
     combinatorics::Permutation<value_t> perms(scope_values);
 
     vector<value_t> unrolled_values(4, 0);
     unrolled_values[3] = const_x_val;
-
+    vector<double> tuple_values(2, c1);
     for (auto& p : perms.getPermutations())
     {
         LOG(INFO) << "computing var. combination: " << strutils::to_string(p);
@@ -773,7 +777,9 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
             unrolled_values[ i ] = p[ i ];
         }
 
-        double val = (w1 * c1) + (w2 * abs(line_flow->getUtil(unrolled_values)));
+        //double val = (w1 * c1) + (w2 * abs(line_flow->getUtil(unrolled_values)));
+        tuple_values[1] = line_flow->getUtil(unrolled_values);
+        double val = wsumCon->getUtil(tuple_values);
         LOG(INFO) << "(" << w1 << " * " << c1 << ") + (" << w2 << " *  abs("
                    << line_flow->getUtil(unrolled_values) << ")) = " << val;
         tabCon->setUtil(p, val);
@@ -1005,8 +1011,6 @@ TableConstraint::ptr ConstraintFactory::createTableConstraint
 
   return con;
 }
-
-
 
 // For WCSPs
 Constraint::ptr 

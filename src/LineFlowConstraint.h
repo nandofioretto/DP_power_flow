@@ -30,8 +30,8 @@ public:
     virtual ~LineFlowConstraint()
     { }
 
-    //  0                1       2       3
-    //v1_m * v1_m * sin(v1_a - v3_a) * x[2]
+    //      0                1       2       3
+    //abs (v1_m * v1_m * sin(v1_a - v3_a) * x[2] )
     util_t getUtil(std::vector<value_t> &values) override
     {
         ASSERT( values.size() == 4, "Error in processing Line flow constraint. Expected 4 arguments");
@@ -39,7 +39,7 @@ public:
         LOG(INFO) << values[0] << " * " << values[0]  << " * sin("
                   << values[1] << " - " << values[2] << ") * "
                   << values[3] << " = " << util;
-        return util;
+        return fabs(util);
     }
 
     void setUtil(std::vector<value_t> &values, util_t util) override
