@@ -684,6 +684,8 @@ TableConstraint::ptr ConstraintFactory::createQbalanceConstraint(rapidxml::xml_n
 // <parameters>
 //   -1 : Pf[1],
 //   1  : abs( v1_m * v1_m * sin(v1_a - v2_a) * x[1] )
+
+//	1  : v1_m * v1_m * Y[1][2] * cos(Theta[1][2]) - v1_m * v2_m * Y[1][2] * sin(v1_a - v2_a - Theta[1][2])
 //<le>0</le>
 //</parameters>
 
@@ -747,15 +749,18 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
     expr2[1] = strutils::erase(expr2[1], {'*', '-'});
     vector<string> split_function = strutils::split(expr2[1]);
 
-    //  0    1     2       3   4      5       6
-    // abs v1_m * v1_m * sin(v1_a - v4_a) * x[3]
-    std::string var_i_m = split_function[1];
-    std::string var_i_a = split_function[4];
-    std::string var_j_a = split_function[5];
-    std::string const_x = split_function[6];
-    value_t     const_x_val = getConstantValue(vec_const, const_x);
-
-    //std::cout << const_x_val << "\n";
+    //  0       1       2       3     4             5     6       7        8   9      10       11
+    // v1_m * v1_m * Y[1][2] * cos(Theta[1][2]) - v1_m * v2_m * Y[1][2] * cos(v1_a - v2_a - Theta[1][2])
+    std::string const_Y = split_function[2];
+    std::string const_T = split_function[4];
+    std::string var_i_m = split_function[0];
+    std::string var_j_m = split_function[6];
+    std::string var_i_a = split_function[9];
+    std::string var_j_a = split_function[10];
+    value_t  const_Y_val = getConstantValue(vec_const, const_Y);
+    value_t  const_T_val = getConstantValue(vec_const, const_T);
+    //LOG(INFO) << const_Y_val;
+    //LOG(INFO) << const_T_val;
 
     auto line_flow = std::make_shared<LineFlowConstraint>(scope);
     auto tabCon    = std::make_shared<TableConstraint>(scope, line_flow->getDefaultUtil());
@@ -765,23 +770,25 @@ TableConstraint::ptr ConstraintFactory::createLineFlowConstraint(rapidxml::xml_n
     auto wsumCon = std::make_shared<WSumConstraint<double>>(TMP, terms_weight, bexpr, rhs_val);
     combinatorics::Permutation<value_t> perms(scope_values);
 
-    vector<value_t> unrolled_values(4, 0);
-    unrolled_values[3] = const_x_val;
+    vector<value_t> unrolled_values(6, 0);
+    unrolled_values[4] = const_Y_val;
+    unrolled_values[5] = const_T_val;
     vector<double> tuple_values(2, c1);
+
     for (auto& p : perms.getPermutations())
     {
         LOG(INFO) << "computing var. combination: " << strutils::to_string(p);
 
-        for (int i = 0; i < unrolled_values.size() - 1; i++)
+        for (int i = 0; i < unrolled_values.size() - 2; i++)
         {
             unrolled_values[ i ] = p[ i ];
         }
 
-        //double val = (w1 * c1) + (w2 * abs(line_flow->getUtil(unrolled_values)));
         tuple_values[1] = line_flow->getUtil(unrolled_values);
         double val = wsumCon->getUtil(tuple_values);
-        LOG(INFO) << "(" << w1 << " * " << c1 << ") + (" << w2 << " *  abs("
-                   << line_flow->getUtil(unrolled_values) << ")) = " << val;
+        LOG(INFO) << "(" << w1 << " * " << c1 << ") + (" << w2 << " * " << line_flow->getUtil(unrolled_values) << ") = " << val;
+        //LOG(INFO) << "(" << w1 << " * " << c1 << ") + (" << w2 << " *  abs(" << line_flow->getUtil(unrolled_values) << ")) = " << val;
+
         tabCon->setUtil(p, val);
     }
 

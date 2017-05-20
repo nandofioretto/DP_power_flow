@@ -32,15 +32,37 @@ public:
 
     //      0                1       2       3
     //abs (v1_m * v1_m * sin(v1_a - v3_a) * x[2] )
+//    util_t getUtil(std::vector<value_t> &values) override
+//    {
+//        ASSERT( values.size() == 4, "Error in processing Line flow constraint. Expected 4 arguments");
+//        util_t util = values[0] * values[0] * sin(values[1] - values[2]) * values[3];
+//        LOG(INFO) << values[0] << " * " << values[0]  << " * sin("
+//                  << values[1] << " - " << values[2] << ") * "
+//                  << values[3] << " = " << util;
+//        return fabs(util);
+//    }
+
+    // v1_m  = 0
+    // v2_m  = 1
+    // v1_a  = 2
+    // v2_a  = 3
+    // Y     = 4
+    // T     = 5
+    // v1_m * v1_m * Y[1][2] * cos(Theta[1][2]) - v1_m * v2_m * Y[1][2] * cos(v1_a - v2_a - Theta[1][2])
     util_t getUtil(std::vector<value_t> &values) override
     {
-        ASSERT( values.size() == 4, "Error in processing Line flow constraint. Expected 4 arguments");
-        util_t util = values[0] * values[0] * sin(values[1] - values[2]) * values[3];
-        LOG(INFO) << values[0] << " * " << values[0]  << " * sin("
-                  << values[1] << " - " << values[2] << ") * "
-                  << values[3] << " = " << util;
-        return fabs(util);
+        ASSERT( values.size() == 6, "Error in processing Line flow constraint. Expected 6 arguments");
+        util_t util = values[0] * values[0] * values[4] * cos(values[5]) -
+                values[0] * values[1] * values[4] * cos(values[2] - values[3] -  values[5]);
+        LOG(INFO) << values[0] << " * " << values[0]  << " * " << values[4] << " * cos("
+                  << values[5] << " ) - " << values[0] << " * "
+                  << values[1] << " * " << values[4] << " * cos("
+                  << values[2] << " - " << values[3] << " - " << values[5] << " ) = " << util;
+//        return fabs(util);
+        return util;
+
     }
+
 
     void setUtil(std::vector<value_t> &values, util_t util) override
     {
